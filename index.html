@@ -225,9 +225,9 @@
             <div class="rack-bolt bolt-bl"></div>
             <div class="rack-bolt bolt-br"></div>
             
-            <!-- HEADER (Now Responsive for Mobile) -->
-            <div class="flex flex-col md:flex-row items-center md:justify-between w-full mb-6 pb-4 border-b-2 border-[#38342e]/30 gap-6 md:gap-0">
-                <div class="flex flex-col gap-1.5 items-center md:items-start w-full md:w-auto">
+            <!-- HEADER (Responsive layout updated to align logo left on mobile) -->
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between w-full mb-6 pb-4 border-b-2 border-[#38342e]/30 gap-6 md:gap-0">
+                <div class="flex flex-col gap-1.5 items-start">
                     <div class="flex items-center gap-1.5 select-none">
                         <div class="logo-panel-accent w-10 h-11 rounded flex flex-col items-center justify-center relative">
                             <span class="logo-char font-mono font-black text-xl tracking-tighter leading-none">C</span>
@@ -246,8 +246,8 @@
                     </div>
                 </div>
 
-                <!-- Transport & Tempo (Gaps adjusted for mobile) -->
-                <div class="flex items-center gap-4 md:gap-8">
+                <!-- Transport & Tempo -->
+                <div class="flex items-center justify-center md:justify-end w-full md:w-auto gap-4 md:gap-8">
                     <div class="flex gap-2 md:gap-4">
                         <div class="flex flex-col items-center gap-2">
                             <span class="text-[9px] font-bold text-[#1f1a14]">CLOCK / PLAY</span>
@@ -281,13 +281,6 @@
 
             <!-- RADIAL SEQUENCER -->
             <div class="panel-outline flex justify-center py-6 w-full relative">
-                <!-- Silkscreen Overlay -->
-                <div class="absolute top-4 left-4 md:left-6 text-[8px] font-bold tracking-widest text-[#82796e] whitespace-nowrap">
-                    12-STEP CYCLE <br> <span class="text-[#38342e]">3:2 RATIO GENERATOR</span><br><br>
-                    <span class="text-[#c83a2a]">VELOCITY STATES:</span><br>
-                    OFF / NORMAL / ACCENT
-                </div>
-
                 <div id="radial-ui">
                     <!-- Guide Rings -->
                     <div class="guide-ring" style="width: 280px; height: 280px;"></div>
