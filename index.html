@@ -137,7 +137,7 @@
             border-radius: 50%;
         }
 
-        /* Modded Guide Rings for Duende Visualization */
+        /* Modded Guide Rings */
         .guide-ring {
             position: absolute;
             top: 50%; left: 50%;
@@ -148,20 +148,9 @@
             transition: all 0.15s ease-out;
         }
 
-        .ring-ghost {
-            border-color: rgba(6, 182, 212, 0.6) !important;
-            box-shadow: 0 0 12px rgba(6, 182, 212, 0.3), inset 0 0 12px rgba(6, 182, 212, 0.3);
-        }
-
-        .ring-redoble {
-            border-color: rgba(234, 179, 8, 0.7) !important;
-            box-shadow: 0 0 16px rgba(234, 179, 8, 0.4), inset 0 0 16px rgba(234, 179, 8, 0.4);
-        }
-
-        .ring-drop {
-            border-color: transparent !important;
-            opacity: 0.1;
-        }
+        .ring-ghost { border-color: rgba(6, 182, 212, 0.6) !important; box-shadow: 0 0 12px rgba(6, 182, 212, 0.3), inset 0 0 12px rgba(6, 182, 212, 0.3); }
+        .ring-redoble { border-color: rgba(234, 179, 8, 0.7) !important; box-shadow: 0 0 16px rgba(234, 179, 8, 0.4), inset 0 0 16px rgba(234, 179, 8, 0.4); }
+        .ring-drop { border-color: transparent !important; opacity: 0.1; }
 
         .radial-node {
             position: absolute;
@@ -199,22 +188,18 @@
         .track-lh.accent .node-led { background: radial-gradient(circle at 35% 35%, #ff9e78 0%, #dc5a24 60%, #521800 100%); box-shadow: 0 0 10px #dc5a24, inset 0 1px 2px rgba(255,255,255,0.8); }
 
         /* Animation States */
-        /* Normal Playhead */
         .track-foot.playing .node-led { background: #fff; box-shadow: 0 0 20px #ff7777, 0 0 10px #fff; }
         .track-rh.playing .node-led { background: #fff; box-shadow: 0 0 20px #ffea78, 0 0 10px #fff; }
         .track-lh.playing .node-led { background: #fff; box-shadow: 0 0 20px #ff9e78, 0 0 10px #fff; }
 
-        /* Ghost Notes (Subtle Cyan Glow on Node) */
         .radial-node.playing-ghost .node-led { background: #a5f3fc; box-shadow: 0 0 12px #06b6d4, inset 0 1px 2px #fff; }
-
-        /* Redoble (Golden Flash on Node) */
         .radial-node.playing-redoble .node-led { background: #fff; box-shadow: 0 0 22px #eab308, 0 0 10px #fff; }
 
     </style>
 </head>
 <body class="min-h-screen flex justify-center items-center">
     
-    <div class="synth-enclosure w-full max-w-3xl">
+    <div class="synth-enclosure w-full max-w-4xl">
         <div class="wooden-ear wooden-ear-left"></div>
 
         <div class="chassis w-full">
@@ -223,7 +208,7 @@
             <div class="rack-bolt bolt-bl"></div>
             <div class="rack-bolt bolt-br"></div>
             
-            <!-- HEADER (Responsive layout aligned left on mobile) -->
+            <!-- HEADER -->
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between w-full mb-6 pb-4 border-b-2 border-[#38342e]/30 gap-6 md:gap-0">
                 <div class="flex flex-col gap-1.5 items-start">
                     <div class="flex items-center gap-1.5 select-none">
@@ -244,8 +229,10 @@
                     </div>
                 </div>
 
-                <!-- Transport & Tempo -->
-                <div class="flex items-center justify-center md:justify-end w-full md:w-auto gap-4 md:gap-8">
+                <!-- Transport, Palo Selector & Tempo -->
+                <div class="flex items-center justify-center md:justify-end w-full md:w-auto gap-4 md:gap-8 flex-wrap">
+                    
+                    <!-- Transport Toggles -->
                     <div class="flex gap-2 md:gap-4">
                         <div class="flex flex-col items-center gap-2">
                             <span class="text-[9px] font-bold text-[#1f1a14]">CLOCK / PLAY</span>
@@ -267,7 +254,40 @@
                             </button>
                         </div>
                     </div>
-                    <div class="knob-wrapper mt-2">
+
+                    <!-- Extended Hardware Palo Selector -->
+                    <div class="flex flex-col gap-2 pl-2 md:pl-4 md:border-l-2 border-[#38342e]/30">
+                        <span class="text-[9px] font-bold text-[#1f1a14] mb-1">PALO SELECT</span>
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="bulerias">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-red-500 shadow-[0_0_6px_#ef4444,inset_0_1px_1px_rgba(255,255,255,0.4)] palo-led" id="led-bulerias"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">BULERÍAS</span>
+                            </div>
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="solea">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-solea"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">SOLEÁ</span>
+                            </div>
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="alegrias">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-alegrias"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">ALEGRÍAS</span>
+                            </div>
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="seguiriyas">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-seguiriyas"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">SEGUIRIYAS</span>
+                            </div>
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="tangos">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-tangos"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">TANGOS</span>
+                            </div>
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="fandangos">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-fandangos"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">FANDANGOS</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tempo Knob -->
+                    <div class="knob-wrapper mt-2 pl-2 md:pl-4 md:border-l-2 border-[#38342e]/30">
                         <div class="tick-container">
                             <div class="tick-ring"></div>
                             <div class="knob global-knob" id="tempoKnob" data-val="50"></div>
@@ -279,8 +299,15 @@
 
             <!-- RADIAL SEQUENCER -->
             <div class="panel-outline flex justify-center py-6 px-4 md:px-8 w-full relative">
+                <!-- Dynamic Silkscreen -->
+                <div class="absolute top-4 left-4 md:left-6 text-[8px] font-bold tracking-widest text-[#82796e] whitespace-nowrap z-10" id="silkscreen-text">
+                    12-STEP CYCLE <br> <span class="text-[#38342e]">3:2 RATIO GENERATOR</span><br><br>
+                    <span class="text-[#c83a2a]">VELOCITY STATES:</span><br>
+                    OFF / NORMAL / ACCENT
+                </div>
+
                 <div id="radial-ui">
-                    <!-- Guide Rings sized proportionally via percentages -->
+                    <!-- Guide Rings -->
                     <div class="guide-ring" style="width: 90%; height: 90%;"></div>
                     <div class="guide-ring" style="width: 64%; height: 64%;"></div>
                     <div class="guide-ring" style="width: 38%; height: 38%;"></div>
@@ -317,57 +344,148 @@
     </div>
 
 <script>
+// Hoist all global variables to the very top to fix TDZ reference errors
 let audioCtx;
 let noiseBuffer;
+let isPlaying = false;
+let isImprovMode = false;
+let currentStep = 0;
+let currentSteps = 12; // Start with 12 for Bulerías
+let nextNoteTime = 0;
+let timerID;
+let bpm = 120;
+const lookahead = 25;
+const scheduleAheadTime = 0.1;
+let drawQueue = [];
+let lastDrawnStep = -1;
+let uiElements = { lh: [], rh: [], foot: [] };
+const container = document.getElementById('radial-ui');
+const center = 50; 
 
-// 3-State Track Definitions (0 = Rest, 1 = Normal, 2 = Accent)
-// Radius values are now percentages (0-50%) for perfect responsive scaling
-const tracks = {
-    lh:   { pattern: [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], radius: 45, class: 'track-lh' },
-    rh:   { pattern: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], radius: 32, class: 'track-rh' },
-    foot: { pattern: [2, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], radius: 19, class: 'track-foot' }
+// Advanced Flamenco Palo Library
+const paloMemory = {
+    bulerias: {
+        steps: 12,
+        lh: [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        rh: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+        foot: [2, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]
+    },
+    solea: {
+        steps: 12,
+        lh: [0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+        rh: [0, 0, 2, 0, 0, 2, 0, 2, 0, 2, 0, 2],
+        foot: [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2]
+    },
+    alegrias: {
+        steps: 12,
+        lh: [0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+        rh: [0, 0, 1, 0, 0, 2, 0, 1, 0, 2, 0, 2],
+        foot: [0, 0, 1, 0, 0, 1, 0, 2, 0, 2, 0, 2]
+    },
+    seguiriyas: {
+        steps: 12,
+        lh: [1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0],
+        rh: [2, 0, 2, 0, 2, 0, 0, 2, 0, 0, 2, 0],
+        foot: [2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0]
+    },
+    fandangos: {
+        steps: 12,
+        lh: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
+        rh: [0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1],
+        foot: [2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0]
+    },
+    tangos: {
+        steps: 8, // Binary (4/4) support triggers radial reconstruction
+        lh: [0, 0, 2, 0, 0, 0, 2, 0],
+        rh: [0, 1, 1, 1, 0, 1, 1, 1],
+        foot: [0, 2, 0, 0, 0, 2, 0, 0]
+    }
 };
 
-const uiElements = { lh: [], rh: [], foot: [] };
-const container = document.getElementById('radial-ui');
-const center = 50; // 50% origin
+const tracks = {
+    lh:   { pattern: [], radius: 45, class: 'track-lh' },
+    rh:   { pattern: [], radius: 32, class: 'track-rh' },
+    foot: { pattern: [], radius: 19, class: 'track-foot' }
+};
 
-Object.keys(tracks).forEach(trackKey => {
-    const track = tracks[trackKey];
-    for (let i = 0; i < 12; i++) {
-        const angle = (i / 12) * Math.PI * 2 - (Math.PI / 2);
-        const x = center + Math.cos(angle) * track.radius;
-        const y = center + Math.sin(angle) * track.radius;
-
-        const node = document.createElement('div');
-        
-        let stateClass = '';
-        if (track.pattern[i] === 1) stateClass = 'active';
-        if (track.pattern[i] === 2) stateClass = 'accent';
-
-        node.className = `radial-node ${track.class} ${stateClass}`;
-        // Map directly via percentages 
-        node.style.left = `${x}%`;
-        node.style.top = `${y}%`;
-
-        const led = document.createElement('div');
-        led.className = 'node-led';
-        node.appendChild(led);
-
-        node.addEventListener('click', () => {
-            track.pattern[i] = (track.pattern[i] + 1) % 3;
-            
-            node.classList.remove('active', 'accent');
-            if (track.pattern[i] === 1) node.classList.add('active');
-            if (track.pattern[i] === 2) node.classList.add('accent');
-        });
-
-        container.appendChild(node);
-        uiElements[trackKey].push(node);
+// Dynamic Grid Rendering Function
+function renderRadialGrid(paloKey) {
+    // Clear DOM and Arrays
+    document.querySelectorAll('.radial-node').forEach(n => n.remove());
+    uiElements = { lh: [], rh: [], foot: [] };
+    
+    // Load requested memory bank
+    tracks.lh.pattern = [...paloMemory[paloKey].lh];
+    tracks.rh.pattern = [...paloMemory[paloKey].rh];
+    tracks.foot.pattern = [...paloMemory[paloKey].foot];
+    
+    currentSteps = paloMemory[paloKey].steps;
+    currentStep = 0;
+    drawQueue = [];
+    
+    // Update structural Silkscreen based on step count (Binary vs Ternary)
+    const silkscreen = document.getElementById('silkscreen-text');
+    if (currentSteps === 8) {
+        silkscreen.innerHTML = '8-STEP CYCLE <br> <span class="text-[#38342e]">4/4 BINARY GENERATOR</span><br><br><span class="text-[#c83a2a]">VELOCITY STATES:</span><br>OFF / NORMAL / ACCENT';
+    } else {
+        silkscreen.innerHTML = '12-STEP CYCLE <br> <span class="text-[#38342e]">3:2 RATIO GENERATOR</span><br><br><span class="text-[#c83a2a]">VELOCITY STATES:</span><br>OFF / NORMAL / ACCENT';
     }
+
+    // Mathematically rebuild the geometry (Circle vs Octagon)
+    Object.keys(tracks).forEach(trackKey => {
+        const track = tracks[trackKey];
+        for (let i = 0; i < currentSteps; i++) {
+            const angle = (i / currentSteps) * Math.PI * 2 - (Math.PI / 2);
+            const x = center + Math.cos(angle) * track.radius;
+            const y = center + Math.sin(angle) * track.radius;
+
+            const node = document.createElement('div');
+            
+            let stateClass = '';
+            if (track.pattern[i] === 1) stateClass = 'active';
+            if (track.pattern[i] === 2) stateClass = 'accent';
+
+            node.className = `radial-node ${track.class} ${stateClass}`;
+            node.style.left = `${x}%`;
+            node.style.top = `${y}%`;
+
+            const led = document.createElement('div');
+            led.className = 'node-led';
+            node.appendChild(led);
+
+            node.addEventListener('click', () => {
+                track.pattern[i] = (track.pattern[i] + 1) % 3;
+                node.classList.remove('active', 'accent');
+                if (track.pattern[i] === 1) node.classList.add('active');
+                if (track.pattern[i] === 2) node.classList.add('accent');
+            });
+
+            container.appendChild(node);
+            uiElements[trackKey].push(node);
+        }
+    });
+}
+
+// Initialize on Bulerías
+renderRadialGrid('bulerias');
+
+// Palo Selector Listener
+document.querySelectorAll('.palo-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const selectedPalo = e.currentTarget.dataset.palo;
+        
+        // UI LED swapping
+        document.querySelectorAll('.palo-led').forEach(led => {
+            led.className = 'w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led';
+        });
+        document.getElementById(`led-${selectedPalo}`).className = 'w-2.5 h-2.5 rounded-full border border-black bg-red-500 shadow-[0_0_6px_#ef4444,inset_0_1px_1px_rgba(255,255,255,0.4)] palo-led';
+
+        // Trigger rebuild
+        renderRadialGrid(selectedPalo);
+    });
 });
 
-// Audio Generation (Synth Engine)
+// Audio Generation
 function playFoot(time, velocity) {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
@@ -416,21 +534,10 @@ function playClap(time, type, velocity) {
     noise.stop(time + 0.1);
 }
 
-// Scheduling Engine
-let isPlaying = false;
-let isImprovMode = false;
-let currentStep = 0;
-let nextNoteTime = 0;
-let timerID;
-let bpm = 120;
-const lookahead = 25;
-const scheduleAheadTime = 0.1;
-let drawQueue = [];
-
 function nextNote() {
     const secondsPerBeat = 60.0 / bpm;
     nextNoteTime += secondsPerBeat / 4; 
-    currentStep = (currentStep + 1) % 12;
+    currentStep = (currentStep + 1) % currentSteps; // Dynamically wraps to 8 or 12
 }
 
 function scheduleNote(step, time) {
@@ -441,7 +548,6 @@ function scheduleNote(step, time) {
     let duendeEvent = null;
     let isRedoble = false;
 
-    // Algorithmic Rhythmic Fills (Duende Mode)
     if (isImprovMode) {
         const rand = Math.random();
         
@@ -487,14 +593,13 @@ function scheduler() {
     timerID = setTimeout(scheduler, lookahead);
 }
 
-// Visual Sync Loop
-let lastDrawnStep = -1;
+// Visual Sync
 function draw() {
     let currentTime = audioCtx.currentTime;
     while (drawQueue.length && drawQueue[0].time < currentTime) {
         const q = drawQueue[0];
         
-        if (lastDrawnStep !== -1) {
+        if (lastDrawnStep !== -1 && lastDrawnStep < currentSteps) {
             Object.keys(uiElements).forEach(key => {
                 uiElements[key][lastDrawnStep].classList.remove('playing', 'playing-ghost', 'playing-redoble');
             });
@@ -525,7 +630,7 @@ function draw() {
     if (isPlaying) requestAnimationFrame(draw);
 }
 
-// Controls: Improv Mode Toggle
+// Transport toggles
 document.getElementById('improvToggle').addEventListener('click', (e) => {
     isImprovMode = !isImprovMode;
     const btn = e.currentTarget;
@@ -542,7 +647,6 @@ document.getElementById('improvToggle').addEventListener('click', (e) => {
     }
 });
 
-// Controls: Play/Pause
 document.getElementById('startStop').addEventListener('click', (e) => {
     if (!audioCtx) {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -575,13 +679,15 @@ document.getElementById('startStop').addEventListener('click', (e) => {
         
         clearTimeout(timerID);
         Object.keys(uiElements).forEach(key => {
-            if (lastDrawnStep !== -1) uiElements[key][lastDrawnStep].classList.remove('playing', 'playing-ghost', 'playing-redoble');
+            if (lastDrawnStep !== -1 && lastDrawnStep < currentSteps) {
+                uiElements[key][lastDrawnStep].classList.remove('playing', 'playing-ghost', 'playing-redoble');
+            }
         });
         drawQueue = [];
     }
 });
 
-// Controls: Tempo Knob Logic
+// Tempo Drag Logic
 const tempoKnob = document.getElementById('tempoKnob');
 let isDragging = false, startY = 0, startVal = 50;
 
