@@ -139,6 +139,7 @@
             border: 2px solid #82796e;
         }
 
+        /* Modded Guide Rings for Duende Visualization */
         .guide-ring {
             position: absolute;
             top: 50%; left: 50%;
@@ -146,6 +147,22 @@
             border-radius: 50%;
             border: 1px dashed rgba(56, 52, 46, 0.3);
             pointer-events: none;
+            transition: all 0.15s ease-out;
+        }
+
+        .ring-ghost {
+            border-color: rgba(6, 182, 212, 0.5) !important;
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.3), inset 0 0 12px rgba(6, 182, 212, 0.3);
+        }
+
+        .ring-redoble {
+            border-color: rgba(234, 179, 8, 0.6) !important;
+            box-shadow: 0 0 16px rgba(234, 179, 8, 0.4), inset 0 0 16px rgba(234, 179, 8, 0.4);
+        }
+
+        .ring-drop {
+            border-color: transparent !important;
+            opacity: 0.1;
         }
 
         .radial-node {
@@ -189,10 +206,10 @@
         .track-rh.playing .node-led { background: #fff; box-shadow: 0 0 20px #ffea78, 0 0 10px #fff; }
         .track-lh.playing .node-led { background: #fff; box-shadow: 0 0 20px #ff9e78, 0 0 10px #fff; }
 
-        /* Ghost Notes (Subtle Cyan Glow) */
+        /* Ghost Notes (Subtle Cyan Glow on Node) */
         .radial-node.playing-ghost .node-led { background: #a5f3fc; box-shadow: 0 0 12px #06b6d4, inset 0 1px 2px #fff; }
 
-        /* Redoble (Golden Flash) */
+        /* Redoble (Golden Flash on Node) */
         .radial-node.playing-redoble .node-led { background: #fff; box-shadow: 0 0 22px #eab308, 0 0 10px #fff; }
 
     </style>
@@ -272,9 +289,6 @@
                 </div>
 
                 <div id="radial-ui">
-                    <!-- Duende Status Display -->
-                    <div id="duendeDisplay" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[10px] font-black tracking-widest opacity-0 transition-opacity duration-150 pointer-events-none z-10" style="text-shadow: 0 1px 2px rgba(255,255,255,0.4);"></div>
-                    
                     <!-- Guide Rings -->
                     <div class="guide-ring" style="width: 280px; height: 280px;"></div>
                     <div class="guide-ring" style="width: 200px; height: 200px;"></div>
@@ -348,7 +362,7 @@ Object.keys(tracks).forEach(trackKey => {
     }
 });
 
-// Audio Generation (Synth Engine) - Now supports Velocity 0.5 (Ghost Note)
+// Audio Generation (Synth Engine)
 function playFoot(time, velocity) {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
@@ -454,14 +468,12 @@ function scheduleNote(step, time) {
     if (playL > 0) playClap(time, 'sorda', playL);
     
     if (isRedoble) {
-        // Use a fixed ~35ms flam offset rather than tempo-syncing it to avoid mechanical stuttering
         const flamOffset = 0.035; 
-        if (playF > 0) playFoot(time + flamOffset, 0.5); // Grace notes are ghosted
+        if (playF > 0) playFoot(time + flamOffset, 0.5); 
         if (playR > 0) playClap(time + flamOffset, 'seca', 0.5);
         if (playL > 0) playClap(time + flamOffset, 'sorda', 0.5);
     }
 
-    // Push state so the UI knows how to light up
     drawQueue.push({ step: step, time: time, modF: playF, modR: playR, modL: playL, duende: duendeEvent });
 }
 
@@ -486,22 +498,24 @@ function draw() {
             });
         }
         
-        // Dynamically apply animation class based on whether it was normal, ghosted (0.5), or redoble
         if (q.modL > 0) uiElements.lh[q.step].classList.add(q.modL === 0.5 ? 'playing-ghost' : (q.duende === 'REDOBLE' ? 'playing-redoble' : 'playing'));
         if (q.modR > 0) uiElements.rh[q.step].classList.add(q.modR === 0.5 ? 'playing-ghost' : (q.duende === 'REDOBLE' ? 'playing-redoble' : 'playing'));
         if (q.modF > 0) uiElements.foot[q.step].classList.add(q.modF === 0.5 ? 'playing-ghost' : (q.duende === 'REDOBLE' ? 'playing-redoble' : 'playing'));
         
-        // Central text visualizer for Duende Events
-        const dDisp = document.getElementById('duendeDisplay');
+        // Pulse the guide rings for Duende visualization
         if (q.duende) {
-            dDisp.innerText = q.duende;
-            dDisp.style.opacity = 1;
+            const rings = document.querySelectorAll('.guide-ring');
+            let ringClass = '';
             
-            if (q.duende === 'GHOST') dDisp.style.color = '#06b6d4'; // Cyan
-            else if (q.duende === 'DROP') dDisp.style.color = '#524941'; // Dark/Muted
-            else if (q.duende === 'REDOBLE') dDisp.style.color = '#eab308'; // Gold
+            if (q.duende === 'GHOST') ringClass = 'ring-ghost';
+            else if (q.duende === 'REDOBLE') ringClass = 'ring-redoble';
+            else if (q.duende === 'DROP') ringClass = 'ring-drop';
             
-            setTimeout(() => { dDisp.style.opacity = 0; }, 150);
+            rings.forEach(r => r.classList.add(ringClass));
+            
+            setTimeout(() => { 
+                rings.forEach(r => r.classList.remove('ring-ghost', 'ring-redoble', 'ring-drop'));
+            }, 150);
         }
 
         lastDrawnStep = q.step;
