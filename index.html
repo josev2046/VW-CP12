@@ -162,7 +162,7 @@
         }
         .radial-node:active { transform: translate(-50%, -48%); box-shadow: 0 0px 0 #000, 0 1px 2px rgba(0,0,0,0.3); }
 
-        /* Accented Node Styling (Velocity = 2) */
+        /* Accented Node Styling */
         .radial-node.accent { border-color: #f7f4e9; box-shadow: 0 2px 0 #000, 0 0 12px rgba(255,255,255,0.4); }
 
         /* Embedded Hardware LEDs */
@@ -174,20 +174,26 @@
             transition: all 0.05s;
         }
 
-        /* Velocity 1 (Active) - Muted LED Colors */
+        /* Base States */
         .track-foot.active .node-led { background: #7a2222; box-shadow: inset 0 1px 2px rgba(0,0,0,0.8); }
         .track-rh.active .node-led { background: #826315; box-shadow: inset 0 1px 2px rgba(0,0,0,0.8); }
         .track-lh.active .node-led { background: #803415; box-shadow: inset 0 1px 2px rgba(0,0,0,0.8); }
 
-        /* Velocity 2 (Accent) - Bright Glowing LEDs */
         .track-foot.accent .node-led { background: radial-gradient(circle at 35% 35%, #ff7777 0%, #c83a2a 60%, #600000 100%); box-shadow: 0 0 10px #c83a2a, inset 0 1px 2px rgba(255,255,255,0.8); }
         .track-rh.accent .node-led { background: radial-gradient(circle at 35% 35%, #ffea78 0%, #dca824 60%, #523b00 100%); box-shadow: 0 0 10px #dca824, inset 0 1px 2px rgba(255,255,255,0.8); }
         .track-lh.accent .node-led { background: radial-gradient(circle at 35% 35%, #ff9e78 0%, #dc5a24 60%, #521800 100%); box-shadow: 0 0 10px #dc5a24, inset 0 1px 2px rgba(255,255,255,0.8); }
 
-        /* Playhead Strike Animation */
+        /* Animation States */
+        /* Normal Playhead */
         .track-foot.playing .node-led { background: #fff; box-shadow: 0 0 20px #ff7777, 0 0 10px #fff; }
         .track-rh.playing .node-led { background: #fff; box-shadow: 0 0 20px #ffea78, 0 0 10px #fff; }
         .track-lh.playing .node-led { background: #fff; box-shadow: 0 0 20px #ff9e78, 0 0 10px #fff; }
+
+        /* Ghost Notes (Subtle Cyan Glow) */
+        .radial-node.playing-ghost .node-led { background: #a5f3fc; box-shadow: 0 0 12px #06b6d4, inset 0 1px 2px #fff; }
+
+        /* Redoble (Golden Flash) */
+        .radial-node.playing-redoble .node-led { background: #fff; box-shadow: 0 0 22px #eab308, 0 0 10px #fff; }
 
     </style>
 </head>
@@ -266,6 +272,9 @@
                 </div>
 
                 <div id="radial-ui">
+                    <!-- Duende Status Display -->
+                    <div id="duendeDisplay" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[10px] font-black tracking-widest opacity-0 transition-opacity duration-150 pointer-events-none z-10" style="text-shadow: 0 1px 2px rgba(255,255,255,0.4);"></div>
+                    
                     <!-- Guide Rings -->
                     <div class="guide-ring" style="width: 280px; height: 280px;"></div>
                     <div class="guide-ring" style="width: 200px; height: 200px;"></div>
@@ -339,7 +348,7 @@ Object.keys(tracks).forEach(trackKey => {
     }
 });
 
-// Audio Generation (Synth Engine)
+// Audio Generation (Synth Engine) - Now supports Velocity 0.5 (Ghost Note)
 function playFoot(time, velocity) {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
@@ -347,8 +356,8 @@ function playFoot(time, velocity) {
     gain.connect(audioCtx.destination);
     osc.type = 'triangle';
     
-    const startFreq = velocity === 2 ? 180 : 120;
-    const peakGain = velocity === 2 ? 1.0 : 0.4;
+    const startFreq = velocity === 2 ? 180 : (velocity === 0.5 ? 90 : 120);
+    const peakGain = velocity === 2 ? 1.0 : (velocity === 0.5 ? 0.15 : 0.4);
     
     osc.frequency.setValueAtTime(startFreq, time);
     osc.frequency.exponentialRampToValueAtTime(30, time + 0.04);
@@ -370,7 +379,7 @@ function playClap(time, type, velocity) {
     gain.connect(audioCtx.destination);
     
     const humanize = (Math.random() * 100) - 50;
-    const gainMult = velocity === 2 ? 1.0 : 0.45;
+    const gainMult = velocity === 2 ? 1.0 : (velocity === 0.5 ? 0.2 : 0.45);
     
     if (type === 'seca') { 
         filter.type = 'bandpass';
@@ -409,30 +418,33 @@ function scheduleNote(step, time) {
     let playF = tracks.foot.pattern[step];
     let playR = tracks.rh.pattern[step];
     let playL = tracks.lh.pattern[step];
+    
+    let duendeEvent = null;
+    let isRedoble = false;
 
     // Algorithmic Rhythmic Fills (Duende Mode)
     if (isImprovMode) {
         const rand = Math.random();
         
         if (playF === 0 && playR === 0 && playL === 0) {
-            // 15% chance to inject a ghost note on empty beats
+            // 15% chance to inject a subtle ghost note on empty beats
             if (rand < 0.15) {
                 const fillChoice = Math.random();
-                if (fillChoice < 0.4) playF = 1;
-                else if (fillChoice < 0.7) playR = 1;
-                else playL = 1;
+                if (fillChoice < 0.4) playF = 0.5;
+                else if (fillChoice < 0.7) playR = 0.5;
+                else playL = 0.5;
+                duendeEvent = 'GHOST';
             }
         } else {
             // 10% chance to drop out (silence) for syncopation
             if (rand < 0.10) {
                 playF = 0; playR = 0; playL = 0;
+                duendeEvent = 'DROP';
             } 
-            // 15% chance to perform a "Redoble" (flamenco double tap)
+            // 15% chance to perform a "Redoble" (flamenco double tap grace-note)
             else if (rand > 0.85) {
-                const halfStepOffset = (60.0 / bpm / 4) / 2;
-                if (playF > 0) playFoot(time + halfStepOffset, 1);
-                if (playR > 0) playClap(time + halfStepOffset, 'seca', 1);
-                if (playL > 0) playClap(time + halfStepOffset, 'sorda', 1);
+                isRedoble = true;
+                duendeEvent = 'REDOBLE';
             }
         }
     }
@@ -441,7 +453,16 @@ function scheduleNote(step, time) {
     if (playR > 0) playClap(time, 'seca', playR);
     if (playL > 0) playClap(time, 'sorda', playL);
     
-    drawQueue.push({ step: step, time: time });
+    if (isRedoble) {
+        // Use a fixed ~35ms flam offset rather than tempo-syncing it to avoid mechanical stuttering
+        const flamOffset = 0.035; 
+        if (playF > 0) playFoot(time + flamOffset, 0.5); // Grace notes are ghosted
+        if (playR > 0) playClap(time + flamOffset, 'seca', 0.5);
+        if (playL > 0) playClap(time + flamOffset, 'sorda', 0.5);
+    }
+
+    // Push state so the UI knows how to light up
+    drawQueue.push({ step: step, time: time, modF: playF, modR: playR, modL: playL, duende: duendeEvent });
 }
 
 function scheduler() {
@@ -457,19 +478,33 @@ let lastDrawnStep = -1;
 function draw() {
     let currentTime = audioCtx.currentTime;
     while (drawQueue.length && drawQueue[0].time < currentTime) {
-        const stepToDraw = drawQueue[0].step;
+        const q = drawQueue[0];
         
         if (lastDrawnStep !== -1) {
             Object.keys(uiElements).forEach(key => {
-                uiElements[key][lastDrawnStep].classList.remove('playing');
+                uiElements[key][lastDrawnStep].classList.remove('playing', 'playing-ghost', 'playing-redoble');
             });
         }
         
-        Object.keys(uiElements).forEach(key => {
-            uiElements[key][stepToDraw].classList.add('playing');
-        });
+        // Dynamically apply animation class based on whether it was normal, ghosted (0.5), or redoble
+        if (q.modL > 0) uiElements.lh[q.step].classList.add(q.modL === 0.5 ? 'playing-ghost' : (q.duende === 'REDOBLE' ? 'playing-redoble' : 'playing'));
+        if (q.modR > 0) uiElements.rh[q.step].classList.add(q.modR === 0.5 ? 'playing-ghost' : (q.duende === 'REDOBLE' ? 'playing-redoble' : 'playing'));
+        if (q.modF > 0) uiElements.foot[q.step].classList.add(q.modF === 0.5 ? 'playing-ghost' : (q.duende === 'REDOBLE' ? 'playing-redoble' : 'playing'));
         
-        lastDrawnStep = stepToDraw;
+        // Central text visualizer for Duende Events
+        const dDisp = document.getElementById('duendeDisplay');
+        if (q.duende) {
+            dDisp.innerText = q.duende;
+            dDisp.style.opacity = 1;
+            
+            if (q.duende === 'GHOST') dDisp.style.color = '#06b6d4'; // Cyan
+            else if (q.duende === 'DROP') dDisp.style.color = '#524941'; // Dark/Muted
+            else if (q.duende === 'REDOBLE') dDisp.style.color = '#eab308'; // Gold
+            
+            setTimeout(() => { dDisp.style.opacity = 0; }, 150);
+        }
+
+        lastDrawnStep = q.step;
         drawQueue.splice(0, 1);
     }
     if (isPlaying) requestAnimationFrame(draw);
@@ -525,7 +560,7 @@ document.getElementById('startStop').addEventListener('click', (e) => {
         
         clearTimeout(timerID);
         Object.keys(uiElements).forEach(key => {
-            if (lastDrawnStep !== -1) uiElements[key][lastDrawnStep].classList.remove('playing');
+            if (lastDrawnStep !== -1) uiElements[key][lastDrawnStep].classList.remove('playing', 'playing-ghost', 'playing-redoble');
         });
         drawQueue = [];
     }
