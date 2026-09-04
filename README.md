@@ -15,7 +15,7 @@
 
 ## 1. Introduction
 
-The CP-12 is not a standard linear step sequencer; it is a radial polyrhythm engine dedicated to the *compás*—the 12-beat metric cycle foundational to flamenco. Specifically, it maps the driving tension of the bulería. Where traditional drum machines lock into rigid 4/4 grids, the CP-12 generates groove through a 3-against-2 polyrhythm. It pits a heavy 3-beat foot pattern against intersecting 2-beat and 3-beat hand claps (*palmas*). The radial interface visualises this 12-step cycle as a continuous loop, geometrically mapping exactly where the duple and triple meters collide.
+The CP-12 is not a standard linear step sequencer; it is a radial polyrhythm engine dedicated to the *compás*—the 12-beat metric cycle foundational to flamenco. Specifically, it maps the driving tension of the *bulería*. Where traditional drum machines lock into rigid 4/4 grids, the CP-12 generates groove through a 3-against-2 polyrhythm. It pits a heavy 3-beat foot pattern against intersecting 2-beat and 3-beat hand claps (*palmas*). The radial interface visualises this 12-step cycle as a continuous loop, geometrically mapping exactly where the duple and triple meters collide.
 
 ## 2. Master controls & architecture
 
