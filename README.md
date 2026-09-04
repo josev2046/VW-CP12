@@ -2,24 +2,23 @@
 
 <img width="50%" height="50%" alt="cp12-screenshot (1)" src="https://github.com/user-attachments/assets/aafa0de4-783a-4805-8aa8-e7fd71dd42e2" />
 
-
 ## Table of contents
 
 1. [Introduction](#1-introduction)
 2. [Master controls & architecture](#2-master-controls--architecture)
 3. [Radial channels & sound shaping](#3-radial-channels--sound-shaping)
-4. [The 12-step grid & velocity states](#4-the-12-step-grid--velocity-states)
+4. [The dynamic grid & velocity states](#4-the-dynamic-grid--velocity-states)
 5. [The Duende (Improv) engine](#5-the-duende-improv-engine)
 6. [Technical specifications](#6-technical-specifications)
 7. [Credits & copyright](#7-credits--copyright)
 
 ## 1. Introduction
 
-The CP-12 is not a standard linear step sequencer; it is a radial polyrhythm engine dedicated to the *compás*—the 12-beat metric cycle foundational to flamenco. Specifically, it maps the driving tension of the *bulería*. Where traditional drum machines lock into rigid 4/4 grids, the CP-12 generates groove through a 3-against-2 polyrhythm. It pits a heavy 3-beat foot pattern against intersecting 2-beat and 3-beat hand claps (*palmas*). The radial interface visualises this 12-step cycle as a continuous loop, geometrically mapping exactly where the duple and triple meters collide.
+The CP-12 is not a standard linear step sequencer; it is a dynamic radial polyrhythm engine dedicated to the foundational rhythms of flamenco. Where traditional drum machines lock into rigid grids, the CP-12 fluidly adapts its architecture to generate the true *compás* of six distinct *palos*. It pits a heavy foot pattern against intersecting hand claps (*palmas*). The radial interface visualises the cycle as a continuous loop, mathematically rebuilding itself in real time to represent both complex 12-step ternary polyrhythms and driving 8-step binary grooves.
 
 ## 2. Master controls & architecture
 
-The header panel governs global transport and tempo.
+The header panel governs global transport, pattern selection, and tempo.
 
 ### 2.1 Transport
 
@@ -28,7 +27,13 @@ The header panel governs global transport and tempo.
 | CLOCK / PLAY | A tactile rocker switch that toggles the global sequencer on and off. Engages the sub-millisecond lookahead scheduling engine on first press, and its adjacent status LED flares bright red while the master clock is running. |
 | DUENDE (IMPROV) | A secondary tactile rocker switch that enables generative algorithmic syncopation, injecting fills, redobles, and drops into the active pattern without losing the underlying *compás*. |
 
-### 2.2 Tempo
+### 2.2 Palo Select
+
+| Control | Function |
+|---|---|
+| PALO SELECT | A bank of LED-indicated tactile buttons to instantly switch the active pattern memory. Choosing a *palo* dynamically reconstructs the radial UI and underlying sequence. Supported *palos* include Bulerías, Soleá, Alegrías, Seguiriyas, Tangos (8-step binary), and Fandangos. |
+
+### 2.3 Tempo
 
 | Control | Function |
 |---|---|
@@ -36,19 +41,19 @@ The header panel governs global transport and tempo.
 
 ## 3. Radial channels & sound shaping
 
-The CP-12 is divided into three independent synthesiser voices, arranged as concentric rings: **FOOT** (inner, carmine red), **RIGHT HAND** (middle, brass), and **LEFT HAND** (outer, terracotta). Each ring carries its own fixed 12-step pattern and its own colour-coded LEDs.
+The CP-12 is divided into three independent synthesiser voices, arranged as concentric rings: **FOOT** (inner, carmine red), **RIGHT HAND** (middle, brass), and **LEFT HAND** (outer, terracotta). Each ring carries its own dynamic pattern and colour-coded LEDs.
 
 ### 3.1 Channel routing
 
 | Ring | Voice | Description |
 |---|---|---|
-| Inner | Foot (*Golpe/Tacón*) | A heavy, pitched-down oscillator thud. Anchors the groove; defaults to a 3-beat subdivision with a hard accent on beat 1. |
-| Middle | Right Hand (*Palma Seca*) | A sharp, band-pass filtered dry clap representing the crack of fingers against the palm. Locks into the 3-beat subdivision alongside the foot. |
-| Outer | Left Hand (*Palma Sorda*) | A resonant, low-pass filtered muffled clap. Runs on a 2-beat subdivision, creating the core polyrhythmic friction against the inner two rings. |
+| Inner | Foot (*Golpe/Tacón*) | A heavy, pitched-down oscillator thud. Anchors the groove with a driving low-end pulse. |
+| Middle | Right Hand (*Palma Seca*) | A sharp, band-pass filtered dry clap representing the crack of fingers against the palm. Provides sharp, high-frequency syncopations. |
+| Outer | Left Hand (*Palma Sorda*) | A resonant, low-pass filtered muffled clap. Creates a darker, rounded transient to establish the core rhythmic friction against the inner two rings. |
 
 ### 3.2 Synthesis parameters
 
-Unlike a fader-per-track design, the CP-12 keeps its analogue voicing fixed in the sound engine rather than exposed on the panel — the emphasis is on rhythmic placement and velocity, not timbral sculpting. Each voice does, however, respond dynamically to the velocity of the step that triggers it:
+Unlike a fader-per-track design, the CP-12 keeps its analogue voicing fixed in the sound engine rather than exposed on the panel — the emphasis is on rhythmic placement and velocity, not timbral sculpting. Each voice responds dynamically to the velocity of the step that triggers it:
 
 | Parameter | Normal (State 1) | Accent (State 2) |
 |---|---|---|
@@ -56,14 +61,15 @@ Unlike a fader-per-track design, the CP-12 keeps its analogue voicing fixed in t
 | Foot / Palma peak gain | Lower | Full |
 | Palma filter frequency | Narrower / lower | Wider / higher |
 
-## 4. The 12-step grid & velocity states
+## 4. The dynamic grid & velocity states
 
-The sequencer matrix is arranged as three concentric rings of tactile, physical-style pads rather than a linear row, so that the 3:2 ratio between the hand and foot tracks is visible as a geometric pattern around the circle.
+The sequencer matrix is arranged as three concentric rings of tactile, physical-style pads rather than a linear row. 
 
-### 4.1 Step interactions
+### 4.1 Step interactions & responsiveness
 
-- **Cycle & toggle** — clicking or tapping a step's pad cycles it through three velocity states in sequence: Rest → Normal → Accent → Rest.
-- **Visual feedback** — the embedded LED on each pad reflects its current state at rest (dark, muted glow, or bright flare with illuminated border), and briefly flashes white as the playhead strikes it during playback.
+- **Dynamic Geometry** — The grid mathematically scales and reconstructs itself based on the selected *palo*, forming a 12-step circle for ternary rhythms or an 8-step octagon for binary rhythms (Tangos).
+- **Cycle & toggle** — Clicking or tapping a step's pad cycles it through three velocity states in sequence: Rest → Normal → Accent → Rest.
+- **Visual feedback** — The embedded LED on each pad reflects its current state at rest (dark, muted glow, or bright flare with illuminated border), and briefly flashes white as the playhead strikes it during playback.
 
 ### 4.2 Velocity states
 
@@ -86,21 +92,20 @@ When active, the Duende engine injects authentic flamenco syncopation into the *
 
 ## 6. Technical specifications
 
-- **Sequencer architecture**: 3 independent voices sharing a single 12-step radial cycle; a fixed 3-beat (Foot, Right Hand) and 2-beat (Left Hand) subdivision generates the underlying 3:2 polyrhythm.
+- **Sequencer architecture**: Dynamic radial cycle adapting to 8 or 12 steps; mathematically reconstructs geometry (x/y coordinates mapped via percentages for flawless responsive scaling) based on the selected *palo*. Includes memory banks for Bulerías, Soleá, Alegrías, Seguiriyas, Tangos, and Fandangos.
 - **Audio engine**: Pure Web Audio API synthesis, driven by a standard lookahead scheduler (25 ms tick, 100 ms schedule-ahead window) referenced against `audioCtx.currentTime` for sample-accurate timing independent of UI thread jitter.
 - **Drum synthesis models**:
   - **Foot**: Triangle wave oscillator with a rapid exponential pitch drop into an exponential gain decay; start frequency and peak gain scaled by velocity (including the 0.5 Ghost state).
   - **Right Hand (Seca)**: Band-pass filtered white noise burst, tuned brighter and wider on accent, with slight randomised detuning ("humanise") to avoid mechanically identical hits.
   - **Left Hand (Sorda)**: Low-pass filtered white noise burst, tuned darker and rounder than the right-hand voice.
 - **Algorithmic modulation (Duende)**: Introduces a non-destructive 0.5 velocity state for ghost notes and calculates a fixed 35ms humanised flam offset for redoble grace notes to prevent audio clipping and mechanical stuttering.
-- **Velocity modulation**: Three-state (Rest / Normal / Accent) array-based pattern data per voice, 12 steps × 3 tracks, augmented dynamically during playback.
-- **Interface**: Hardware-styled 340px radial UI within a rack-mounted chassis, using Pointer Event handling for the tempo knob and click/tap handling for step nodes. Includes CSS-driven dashed ring visualisers for algorithmic states.
+- **Interface**: Responsive, hardware-styled radial UI within a rack-mounted chassis. Uses Pointer Event handling for the tempo knob, click/tap handling for step nodes, and dynamic DOM rendering with CSS-driven dashed ring visualisers to seamlessly transition between time signatures.
 
 ## 7. Credits & copyright
 
-CP-12 Compás Processor
-Created & Developed by José Velázquez MA
-Published by Voltage & Wave
+CP-12 Compás Processor  
+Created & Developed by José Velázquez MA  
+Published by Voltage & Wave  
 Website: [voltageandwave.co.uk](https://voltageandwave.co.uk/)
 
 Copyright © 2026 José Velázquez MA / Voltage & Wave. All rights reserved.
