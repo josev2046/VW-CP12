@@ -127,16 +127,14 @@
         }
         .knob::after { content: ''; position: absolute; top: 3px; left: 18px; width: 2px; height: 13px; background: #fff; border-radius: 1px; box-shadow: 0 0 2px rgba(255,255,255,0.9); }
 
-        /* Radial UI Specifics */
+        /* Responsive Radial UI Container */
         #radial-ui {
             position: relative;
-            width: 340px;
-            height: 340px;
-            margin: 20px auto;
+            width: 100%;
+            max-width: 480px;
+            aspect-ratio: 1 / 1;
+            margin: 10px auto;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.15) 100%);
-            box-shadow: inset 0 4px 10px rgba(0,0,0,0.2), 0 1px 1px rgba(255,255,255,0.6);
-            border: 2px solid #82796e;
         }
 
         /* Modded Guide Rings for Duende Visualization */
@@ -145,18 +143,18 @@
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             border-radius: 50%;
-            border: 1px dashed rgba(56, 52, 46, 0.3);
+            border: 1.5px dashed rgba(56, 52, 46, 0.25);
             pointer-events: none;
             transition: all 0.15s ease-out;
         }
 
         .ring-ghost {
-            border-color: rgba(6, 182, 212, 0.5) !important;
+            border-color: rgba(6, 182, 212, 0.6) !important;
             box-shadow: 0 0 12px rgba(6, 182, 212, 0.3), inset 0 0 12px rgba(6, 182, 212, 0.3);
         }
 
         .ring-redoble {
-            border-color: rgba(234, 179, 8, 0.6) !important;
+            border-color: rgba(234, 179, 8, 0.7) !important;
             box-shadow: 0 0 16px rgba(234, 179, 8, 0.4), inset 0 0 16px rgba(234, 179, 8, 0.4);
         }
 
@@ -173,14 +171,14 @@
             cursor: pointer;
             background: linear-gradient(180deg, #33363d 0%, #191a1e 100%);
             border: 2px solid #000;
-            box-shadow: 0 2px 0 #000, 0 3px 5px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.1);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.15);
             display: flex; align-items: center; justify-content: center;
             transition: transform 0.05s, border-color 0.2s, box-shadow 0.2s;
         }
-        .radial-node:active { transform: translate(-50%, -48%); box-shadow: 0 0px 0 #000, 0 1px 2px rgba(0,0,0,0.3); }
+        .radial-node:active { transform: translate(-50%, -48%); box-shadow: 0 1px 2px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.15); }
 
         /* Accented Node Styling */
-        .radial-node.accent { border-color: #f7f4e9; box-shadow: 0 2px 0 #000, 0 0 12px rgba(255,255,255,0.4); }
+        .radial-node.accent { border-color: #f7f4e9; box-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 12px rgba(255,255,255,0.4); }
 
         /* Embedded Hardware LEDs */
         .node-led { 
@@ -225,7 +223,7 @@
             <div class="rack-bolt bolt-bl"></div>
             <div class="rack-bolt bolt-br"></div>
             
-            <!-- HEADER (Responsive layout updated to align logo left on mobile) -->
+            <!-- HEADER (Responsive layout aligned left on mobile) -->
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between w-full mb-6 pb-4 border-b-2 border-[#38342e]/30 gap-6 md:gap-0">
                 <div class="flex flex-col gap-1.5 items-start">
                     <div class="flex items-center gap-1.5 select-none">
@@ -280,12 +278,12 @@
             </div>
 
             <!-- RADIAL SEQUENCER -->
-            <div class="panel-outline flex justify-center py-6 w-full relative">
+            <div class="panel-outline flex justify-center py-6 px-4 md:px-8 w-full relative">
                 <div id="radial-ui">
-                    <!-- Guide Rings -->
-                    <div class="guide-ring" style="width: 280px; height: 280px;"></div>
-                    <div class="guide-ring" style="width: 200px; height: 200px;"></div>
-                    <div class="guide-ring" style="width: 120px; height: 120px;"></div>
+                    <!-- Guide Rings sized proportionally via percentages -->
+                    <div class="guide-ring" style="width: 90%; height: 90%;"></div>
+                    <div class="guide-ring" style="width: 64%; height: 64%;"></div>
+                    <div class="guide-ring" style="width: 38%; height: 38%;"></div>
                 </div>
             </div>
             
@@ -323,15 +321,16 @@ let audioCtx;
 let noiseBuffer;
 
 // 3-State Track Definitions (0 = Rest, 1 = Normal, 2 = Accent)
+// Radius values are now percentages (0-50%) for perfect responsive scaling
 const tracks = {
-    lh:   { pattern: [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], radius: 140, class: 'track-lh' },
-    rh:   { pattern: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], radius: 100, class: 'track-rh' },
-    foot: { pattern: [2, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], radius: 60,  class: 'track-foot' }
+    lh:   { pattern: [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], radius: 45, class: 'track-lh' },
+    rh:   { pattern: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], radius: 32, class: 'track-rh' },
+    foot: { pattern: [2, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], radius: 19, class: 'track-foot' }
 };
 
 const uiElements = { lh: [], rh: [], foot: [] };
 const container = document.getElementById('radial-ui');
-const center = 170;
+const center = 50; // 50% origin
 
 Object.keys(tracks).forEach(trackKey => {
     const track = tracks[trackKey];
@@ -347,8 +346,9 @@ Object.keys(tracks).forEach(trackKey => {
         if (track.pattern[i] === 2) stateClass = 'accent';
 
         node.className = `radial-node ${track.class} ${stateClass}`;
-        node.style.left = `${x}px`;
-        node.style.top = `${y}px`;
+        // Map directly via percentages 
+        node.style.left = `${x}%`;
+        node.style.top = `${y}%`;
 
         const led = document.createElement('div');
         led.className = 'node-led';
