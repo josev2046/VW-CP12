@@ -1,4 +1,6 @@
 # CP-12 Compás Processor
+[![DOI](https://zenodo.org/badge/1357103336.svg)](https://doi.org/10.5281/zenodo.22308834)
+
 ## Table of Contents
 
 1. [Introduction](#1-introduction)
