@@ -102,7 +102,6 @@
             box-shadow: 0 3px 0 #1a0303, 0 0 16px rgba(239, 68, 68, 0.7);
         }
 
-        /* Knob Styles */
         .knob-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; width: 56px; }
         .tick-container { position: relative; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; }
         .tick-ring {
@@ -127,7 +126,6 @@
         }
         .knob::after { content: ''; position: absolute; top: 3px; left: 18px; width: 2px; height: 13px; background: #fff; border-radius: 1px; box-shadow: 0 0 2px rgba(255,255,255,0.9); }
 
-        /* Responsive Radial UI Container */
         #radial-ui {
             position: relative;
             width: 100%;
@@ -137,7 +135,6 @@
             border-radius: 50%;
         }
 
-        /* Modded Guide Rings */
         .guide-ring {
             position: absolute;
             top: 50%; left: 50%;
@@ -165,11 +162,8 @@
             transition: transform 0.05s, border-color 0.2s, box-shadow 0.2s;
         }
         .radial-node:active { transform: translate(-50%, -48%); box-shadow: 0 1px 2px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.15); }
-
-        /* Accented Node Styling */
         .radial-node.accent { border-color: #f7f4e9; box-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 12px rgba(255,255,255,0.4); }
 
-        /* Embedded Hardware LEDs */
         .node-led { 
             width: 10px; height: 10px; border-radius: 50%; 
             background: radial-gradient(circle at 35% 35%, #2a2a2a 0%, #050505 70%); 
@@ -178,7 +172,6 @@
             transition: all 0.05s;
         }
 
-        /* Base States */
         .track-foot.active .node-led { background: #7a2222; box-shadow: inset 0 1px 2px rgba(0,0,0,0.8); }
         .track-rh.active .node-led { background: #826315; box-shadow: inset 0 1px 2px rgba(0,0,0,0.8); }
         .track-lh.active .node-led { background: #803415; box-shadow: inset 0 1px 2px rgba(0,0,0,0.8); }
@@ -187,7 +180,6 @@
         .track-rh.accent .node-led { background: radial-gradient(circle at 35% 35%, #ffea78 0%, #dca824 60%, #523b00 100%); box-shadow: 0 0 10px #dca824, inset 0 1px 2px rgba(255,255,255,0.8); }
         .track-lh.accent .node-led { background: radial-gradient(circle at 35% 35%, #ff9e78 0%, #dc5a24 60%, #521800 100%); box-shadow: 0 0 10px #dc5a24, inset 0 1px 2px rgba(255,255,255,0.8); }
 
-        /* Animation States */
         .track-foot.playing .node-led { background: #fff; box-shadow: 0 0 20px #ff7777, 0 0 10px #fff; }
         .track-rh.playing .node-led { background: #fff; box-shadow: 0 0 20px #ffea78, 0 0 10px #fff; }
         .track-lh.playing .node-led { background: #fff; box-shadow: 0 0 20px #ff9e78, 0 0 10px #fff; }
@@ -232,7 +224,6 @@
                 <!-- Transport, Palo Selector & Tempo -->
                 <div class="flex items-center justify-center md:justify-end w-full md:w-auto gap-4 md:gap-8 flex-wrap">
                     
-                    <!-- Transport Toggles -->
                     <div class="flex gap-2 md:gap-4">
                         <div class="flex flex-col items-center gap-2">
                             <span class="text-[9px] font-bold text-[#1f1a14]">CLOCK / PLAY</span>
@@ -255,13 +246,21 @@
                         </div>
                     </div>
 
-                    <!-- Extended Hardware Palo Selector -->
+                    <!-- Extended Hardware Palo Selector (9 Buttons) -->
                     <div class="flex flex-col gap-2 pl-2 md:pl-4 md:border-l-2 border-[#38342e]/30">
-                        <span class="text-[9px] font-bold text-[#1f1a14] mb-1">PALO SELECT</span>
-                        <div class="grid grid-cols-2 gap-x-4 gap-y-1.5">
-                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="bulerias">
-                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-red-500 shadow-[0_0_6px_#ef4444,inset_0_1px_1px_rgba(255,255,255,0.4)] palo-led" id="led-bulerias"></div>
-                                <span class="text-[8px] font-bold text-[#1f1a14]">BULERÍAS</span>
+                        <span class="text-[9px] font-bold text-[#1f1a14] mb-1">PATTERN SELECT</span>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1.5">
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="poly32">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-poly32"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">POLY 3:2</span>
+                            </div>
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="bulerias12">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-red-500 shadow-[0_0_6px_#ef4444,inset_0_1px_1px_rgba(255,255,255,0.4)] palo-led" id="led-bulerias12"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">BULERÍA 12</span>
+                            </div>
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="bulerias6">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-bulerias6"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">BULERÍA 6</span>
                             </div>
                             <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="solea">
                                 <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-solea"></div>
@@ -282,6 +281,10 @@
                             <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="fandangos">
                                 <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-fandangos"></div>
                                 <span class="text-[8px] font-bold text-[#1f1a14]">FANDANGOS</span>
+                            </div>
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="rumbas">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-rumbas"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">RUMBAS</span>
                             </div>
                         </div>
                     </div>
@@ -309,13 +312,9 @@
             
             <!-- Silkscreen Details & Footer -->
             <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 w-full pt-6 mt-4 border-t-2 border-[#38342e]/30">
-                
-                <!-- Dynamic Silkscreen (Moved from UI Background) -->
                 <div id="silkscreen-text" class="flex flex-col sm:flex-row gap-4 sm:gap-8 text-[8px] font-bold tracking-widest text-[#82796e] uppercase">
                     <!-- Populated by JS -->
                 </div>
-
-                <!-- Copyright -->
                 <div class="text-[9px] text-[#38342e] font-mono font-bold tracking-widest text-left md:text-right shrink-0">
                     &copy; JOSE VELAZQUEZ MA / <a href="https://voltageandwave.co.uk/" target="_blank" rel="noopener noreferrer" class="hover:text-[#c83a2a] underline transition-colors">VOLTAGE &amp; WAVE</a>
                 </div>
@@ -326,13 +325,12 @@
     </div>
 
 <script>
-// Hoist all global variables to the very top to fix TDZ reference errors
 let audioCtx;
 let noiseBuffer;
 let isPlaying = false;
 let isImprovMode = false;
 let currentStep = 0;
-let currentSteps = 12; // Start with 12 for Bulerías
+let currentSteps = 12; 
 let nextNoteTime = 0;
 let timerID;
 let bpm = 120;
@@ -344,13 +342,25 @@ let uiElements = { lh: [], rh: [], foot: [] };
 const container = document.getElementById('radial-ui');
 const center = 50; 
 
-// Advanced Flamenco Palo Library
+// Advanced Flamenco Palo & Math Library
 const paloMemory = {
-    bulerias: {
+    poly32: { // Pure 3-against-2 mathematical representation
         steps: 12,
         lh: [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
         rh: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
         foot: [2, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]
+    },
+    bulerias12: { // Standard 12-beat Compás mapping
+        steps: 12,
+        lh: [0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+        rh: [1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0],
+        foot: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2]
+    },
+    bulerias6: { // Medio Compás variation (6 beats)
+        steps: 6,
+        lh: [1, 0, 1, 0, 1, 0],
+        rh: [0, 1, 0, 1, 0, 1],
+        foot: [2, 0, 2, 0, 2, 0]
     },
     solea: {
         steps: 12,
@@ -370,17 +380,23 @@ const paloMemory = {
         rh: [2, 0, 2, 0, 2, 0, 0, 2, 0, 0, 2, 0],
         foot: [2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0]
     },
+    tangos: {
+        steps: 8,
+        lh: [0, 0, 2, 0, 0, 0, 2, 0],
+        rh: [0, 1, 1, 1, 0, 1, 1, 1],
+        foot: [0, 2, 0, 0, 0, 2, 0, 0]
+    },
     fandangos: {
         steps: 12,
         lh: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
         rh: [0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1],
         foot: [2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0]
     },
-    tangos: {
-        steps: 8, // Binary (4/4) support triggers radial reconstruction
-        lh: [0, 0, 2, 0, 0, 0, 2, 0],
-        rh: [0, 1, 1, 1, 0, 1, 1, 1],
-        foot: [0, 2, 0, 0, 0, 2, 0, 0]
+    rumbas: { // 4/4 variation
+        steps: 8,
+        lh: [1, 0, 0, 1, 0, 0, 1, 0],
+        rh: [0, 1, 1, 0, 1, 1, 0, 1],
+        foot: [2, 0, 0, 0, 2, 0, 0, 0]
     }
 };
 
@@ -390,13 +406,10 @@ const tracks = {
     foot: { pattern: [], radius: 19, class: 'track-foot' }
 };
 
-// Dynamic Grid Rendering Function
 function renderRadialGrid(paloKey) {
-    // Clear DOM and Arrays
     document.querySelectorAll('.radial-node').forEach(n => n.remove());
     uiElements = { lh: [], rh: [], foot: [] };
     
-    // Load requested memory bank
     tracks.lh.pattern = [...paloMemory[paloKey].lh];
     tracks.rh.pattern = [...paloMemory[paloKey].rh];
     tracks.foot.pattern = [...paloMemory[paloKey].foot];
@@ -405,15 +418,16 @@ function renderRadialGrid(paloKey) {
     currentStep = 0;
     drawQueue = [];
     
-    // Update structural Silkscreen based on step count (Binary vs Ternary)
     const silkscreen = document.getElementById('silkscreen-text');
     if (currentSteps === 8) {
         silkscreen.innerHTML = '<div>8-STEP CYCLE <br> <span class="text-[#38342e]">4/4 BINARY GENERATOR</span></div><div><span class="text-[#c83a2a]">VELOCITY STATES:</span><br><span class="text-[#38342e]">OFF / NORMAL / ACCENT</span></div>';
+    } else if (currentSteps === 6) {
+        silkscreen.innerHTML = '<div>6-STEP CYCLE <br> <span class="text-[#38342e]">MEDIO COMPÁS GENERATOR</span></div><div><span class="text-[#c83a2a]">VELOCITY STATES:</span><br><span class="text-[#38342e]">OFF / NORMAL / ACCENT</span></div>';
     } else {
-        silkscreen.innerHTML = '<div>12-STEP CYCLE <br> <span class="text-[#38342e]">3:2 RATIO GENERATOR</span></div><div><span class="text-[#c83a2a]">VELOCITY STATES:</span><br><span class="text-[#38342e]">OFF / NORMAL / ACCENT</span></div>';
+        const titleType = paloKey === 'poly32' ? '3:2 RATIO GENERATOR' : 'COMPÁS GENERATOR';
+        silkscreen.innerHTML = `<div>12-STEP CYCLE <br> <span class="text-[#38342e]">${titleType}</span></div><div><span class="text-[#c83a2a]">VELOCITY STATES:</span><br><span class="text-[#38342e]">OFF / NORMAL / ACCENT</span></div>`;
     }
 
-    // Mathematically rebuild the geometry (Circle vs Octagon)
     Object.keys(tracks).forEach(trackKey => {
         const track = tracks[trackKey];
         for (let i = 0; i < currentSteps; i++) {
@@ -448,26 +462,22 @@ function renderRadialGrid(paloKey) {
     });
 }
 
-// Initialize on Bulerías
-renderRadialGrid('bulerias');
+// Load default
+renderRadialGrid('bulerias12');
 
-// Palo Selector Listener
 document.querySelectorAll('.palo-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         const selectedPalo = e.currentTarget.dataset.palo;
         
-        // UI LED swapping
         document.querySelectorAll('.palo-led').forEach(led => {
             led.className = 'w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led';
         });
         document.getElementById(`led-${selectedPalo}`).className = 'w-2.5 h-2.5 rounded-full border border-black bg-red-500 shadow-[0_0_6px_#ef4444,inset_0_1px_1px_rgba(255,255,255,0.4)] palo-led';
 
-        // Trigger rebuild
         renderRadialGrid(selectedPalo);
     });
 });
 
-// Audio Generation
 function playFoot(time, velocity) {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
@@ -519,7 +529,7 @@ function playClap(time, type, velocity) {
 function nextNote() {
     const secondsPerBeat = 60.0 / bpm;
     nextNoteTime += secondsPerBeat / 4; 
-    currentStep = (currentStep + 1) % currentSteps; // Dynamically wraps to 8 or 12
+    currentStep = (currentStep + 1) % currentSteps;
 }
 
 function scheduleNote(step, time) {
@@ -575,7 +585,6 @@ function scheduler() {
     timerID = setTimeout(scheduler, lookahead);
 }
 
-// Visual Sync
 function draw() {
     let currentTime = audioCtx.currentTime;
     while (drawQueue.length && drawQueue[0].time < currentTime) {
@@ -612,7 +621,6 @@ function draw() {
     if (isPlaying) requestAnimationFrame(draw);
 }
 
-// Transport toggles
 document.getElementById('improvToggle').addEventListener('click', (e) => {
     isImprovMode = !isImprovMode;
     const btn = e.currentTarget;
@@ -669,7 +677,6 @@ document.getElementById('startStop').addEventListener('click', (e) => {
     }
 });
 
-// Tempo Drag Logic
 const tempoKnob = document.getElementById('tempoKnob');
 let isDragging = false, startY = 0, startVal = 50;
 
