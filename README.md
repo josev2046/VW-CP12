@@ -1,7 +1,7 @@
-# CP-12 Compás Processor
+# CP-12 *Compás* processor
 [![DOI](https://zenodo.org/badge/1357103336.svg)](https://doi.org/10.5281/zenodo.22308834)
 
-## Table of Contents
+## Table of contents
 
 1. [Introduction](#1-introduction)
 2. [Quick Start](#2-quick-start)
@@ -26,7 +26,7 @@ It pits a heavy foot pattern against intersecting hand claps (*palmas*). The rad
 
 ---
 
-## 2. Quick Start
+## 2. Quick start
 
 1. **Pick a pattern.** Choose one of the nine PATTERN SELECT buttons (defaults to BULERÍA 12 on load). The radial grid rebuilds itself instantly to match the new cycle length.
 2. **Press CLOCK / PLAY.** The rocker switch lights up and the transport starts; the first press also initialises the audio engine, so playback begins a beat after the click.
@@ -36,7 +36,7 @@ It pits a heavy foot pattern against intersecting hand claps (*palmas*). The rad
 
 ---
 
-## 3. Master Controls & Architecture
+## 3. Master controls & architecture
 
 The header panel governs global transport, pattern selection, and tempo.
 
@@ -47,7 +47,7 @@ The header panel governs global transport, pattern selection, and tempo.
 | **CLOCK / PLAY** | A tactile rocker switch that toggles the global sequencer on and off. Engages the sub-millisecond lookahead scheduling engine on first press, and its adjacent status LED flares bright red while the master clock is running. |
 | **DUENDE (IMPROV)** | A secondary tactile rocker switch that enables generative algorithmic syncopation, injecting fills, redobles, and drops into the active pattern without losing the underlying *compás*. |
 
-### 3.2 Pattern Select
+### 3.2 Pattern select
 
 A bank of nine LED-indicated tactile buttons instantly switches the active pattern memory. Choosing a pattern dynamically reconstructs the radial UI and underlying sequence:
 
@@ -62,22 +62,22 @@ A continuous rotary encoder controls the master clock speed, scaling smoothly fr
 
 ---
 
-## 4. Radial Channels & Sound Shaping
+## 4. Radial channels & sound shaping
 
 The CP-12 is divided into three independent synthesiser voices, arranged as concentric rings. Each ring carries its own dynamic pattern and colour-coded LEDs.
 
 <img width="1100" height="1240" alt="radial_channel_map" src="https://github.com/user-attachments/assets/4c390613-3835-4ffc-8482-bbaf6fac9a56" />
 
 
-### 4.1 Channel Routing
+### 4.1 Channel routing
 
 | Ring | Voice | Description |
 |---|---|---|
 | Inner | **Foot** (*Golpe/Tacón*) | A heavy, pitched-down oscillator thud. Anchors the groove with a driving low-end pulse. |
-| Middle | **Right Hand** (*Palma Seca*) | A sharp, band-pass filtered dry clap representing the crack of fingers against the palm. Provides sharp, high-frequency syncopations. |
-| Outer | **Left Hand** (*Palma Sorda*) | A resonant, low-pass filtered muffled clap. Creates a darker, rounded transient that establishes the core rhythmic friction against the inner two rings. |
+| Middle | **Right hand** (*Palma seca*) | A sharp, band-pass filtered dry clap representing the crack of fingers against the palm. Provides sharp, high-frequency syncopations. |
+| Outer | **Left hand** (*Palma sorda*) | A resonant, low-pass filtered muffled clap. Creates a darker, rounded transient that establishes the core rhythmic friction against the inner two rings. |
 
-### 4.2 Synthesis Parameters
+### 4.2 Synthesis parameters
 
 Unlike a fader-per-track design, the CP-12 keeps its analogue voicing fixed in the sound engine rather than exposed on the panel — the emphasis is on rhythmic placement and velocity, not timbral sculpting. Each voice responds dynamically to the velocity of the step that triggers it:
 
@@ -89,20 +89,20 @@ Unlike a fader-per-track design, the CP-12 keeps its analogue voicing fixed in t
 
 ---
 
-## 5. The Dynamic Grid & Velocity States
+## 5. The dynamic grid & velocity atates
 
 The sequencer matrix is arranged as three concentric rings of tactile, physical-style pads rather than a linear row.
 
-### 5.1 Step Interactions & Responsiveness
+### 5.1 Step interactions & responsiveness
 
-- **Dynamic Geometry** — The grid mathematically scales and reconstructs itself based on the selected pattern, forming a 12-step circle for standard ternary rhythms, an 8-step circle for binary rhythms (Tangos, Rumbas), or a 6-step circle for *medio compás* (Bulería 6).
-- **Cycle & Toggle** — Clicking or tapping a step's pad cycles it through three velocity states in sequence: **Rest → Normal → Accent → Rest**.
-- **Visual Feedback** — The embedded LED on each pad reflects its current state at rest (dark, muted glow, or bright flare with illuminated border), and briefly flashes white as the playhead strikes it during playback. The central silkscreen text updates dynamically to reflect the current cycle length.
+- **Dynamic geometry** — The grid mathematically scales and reconstructs itself based on the selected pattern, forming a 12-step circle for standard ternary rhythms, an 8-step circle for binary rhythms (Tangos, Rumbas), or a 6-step circle for *medio compás* (Bulería 6).
+- **Cycle & toggle** — Clicking or tapping a step's pad cycles it through three velocity states in sequence: **Rest → Normal → Accent → Rest**.
+- **Visual feedback** — The embedded LED on each pad reflects its current state at rest (dark, muted glow, or bright flare with illuminated border), and briefly flashes white as the playhead strikes it during playback. The central silkscreen text updates dynamically to reflect the current cycle length.
 
 <img width="1500" height="840" alt="velocity_state_cycle" src="https://github.com/user-attachments/assets/a7a73ef8-91d3-4650-a101-216413470f2b" />
 
 
-### 5.2 Velocity States
+### 5.2 Velocity states
 
 The CP-12 uses a discrete velocity system in place of full parameter locking, which dynamically expands when the Duende engine is active:
 
@@ -117,21 +117,21 @@ The CP-12 uses a discrete velocity system in place of full parameter locking, wh
 
 ---
 
-## 6. The Duende (Improv) Engine
+## 6. The *Duende* (Improv) engine
 
 When active, the Duende engine injects authentic flamenco syncopation into the *compás*. These generative events are visualised dynamically on the sequencer's central dashed guide rings and are re-rolled independently for every step of every pass.
 
 <img width="1240" height="860" alt="duende_probabilities" src="https://github.com/user-attachments/assets/c1e88d88-1077-429f-82f0-aa120ee31165" />
 
-- **Ghost Fills** — 15% chance to fill a completely empty step with a subtle foot tap or muted clap. The central guide rings pulse with a watery cyan glow.
-- **Syncopated Drops** — 10% chance to drop an active beat entirely, creating structural voids. The central guide rings completely dim out.
-- **Redobles (Double Strikes)** — 15% chance to trigger a rapid double-tap (flam), using a fixed 35 ms humanised offset. The central guide rings flash a bright, resonant gold, and the step node itself flashes gold.
+- **Ghost fills** — 15% chance to fill a completely empty step with a subtle foot tap or muted clap. The central guide rings pulse with a watery cyan glow.
+- **Syncopated drops** — 10% chance to drop an active beat entirely, creating structural voids. The central guide rings completely dim out.
+- **Redobles (double strikes)** — 15% chance to trigger a rapid double-tap (flam), using a fixed 35 ms humanised offset. The central guide rings flash a bright, resonant gold, and the step node itself flashes gold.
 
 Ghost Fills only roll on steps that are silent (Rest) across all three channels; Drops and Redobles only roll on steps where at least one channel is already active — the engine never invents an event on top of nothing, and never doubles up a fill on top of a fill.
 
 ---
 
-## 7. Pattern Memory Reference
+## 7. Pattern memory reference
 
 The active pattern determines both the rhythmic content of all three channels and the physical geometry of the radial grid.
 
@@ -152,7 +152,7 @@ The active pattern determines both the rhythmic content of all three channels an
 
 ---
 
-## 8. Technical Specifications
+## 8. Technical specifications
 
 - **Sequencer architecture** — Dynamic radial cycle adapting to 6, 8, or 12 steps; mathematically reconstructs geometry (x/y coordinates mapped via percentages for flawless responsive scaling) based on the selected pattern. Includes memory banks for Poly 3:2, Bulería 12, Bulería 6, Soleá, Alegrías, Seguiriyas, Tangos, Fandangos, and Rumbas.
 - **Audio engine** — Pure Web Audio API synthesis, driven by a standard lookahead scheduler (25 ms tick, 100 ms schedule-ahead window) referenced against `audioCtx.currentTime` for sample-accurate timing independent of UI thread jitter.
@@ -176,9 +176,9 @@ The active pattern determines both the rhythmic content of all three channels an
 
 ---
 
-## 10. Credits & Copyright
+## 10. Credits & copyright
 
-**CP-12 Compás Processor**
+**CP-12 *compás* processor**
 Created & Developed by José Velázquez MA
 Published by Voltage & Wave
 Website: [voltageandwave.co.uk](https://voltageandwave.co.uk/)
