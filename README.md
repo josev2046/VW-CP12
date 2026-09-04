@@ -93,8 +93,4 @@ Website: [voltageandwave.co.uk](https://voltageandwave.co.uk/)
 
 Copyright © 2026 José Velázquez MA / Voltage & Wave. All rights reserved.
 
----
 
-### About
-
-A radial 3:2 polyrhythm generator bridging the 12-beat flamenco *compás* with the Web Audio API.
