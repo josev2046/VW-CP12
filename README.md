@@ -14,7 +14,7 @@
 
 ## 1. Introduction
 
-The CP-12 is not a standard linear step sequencer; it is a dynamic radial polyrhythm engine dedicated to the foundational rhythms of flamenco. Where traditional drum machines lock into rigid grids, the CP-12 fluidly adapts its architecture to generate the true *compás* of six distinct *palos*. It pits a heavy foot pattern against intersecting hand claps (*palmas*). The radial interface visualises the cycle as a continuous loop, mathematically rebuilding itself in real time to represent both complex 12-step ternary polyrhythms and driving 8-step binary grooves.
+The CP-12 is not a standard linear step sequencer; it is a dynamic radial polyrhythm engine dedicated to the foundational rhythms of flamenco. Where traditional drum machines lock into rigid grids, the CP-12 fluidly adapts its architecture to generate the true *compás* of several distinct *palos*, as well as purely mathematical polyrhythmic ratios. It pits a heavy foot pattern against intersecting hand claps (*palmas*). The radial interface visualises the cycle as a continuous loop, mathematically rebuilding itself in real time to represent complex 12-step ternary polyrhythms, 8-step binary grooves, and tight 6-step *medio compás* cycles.
 
 ## 2. Master controls & architecture
 
@@ -27,11 +27,11 @@ The header panel governs global transport, pattern selection, and tempo.
 | CLOCK / PLAY | A tactile rocker switch that toggles the global sequencer on and off. Engages the sub-millisecond lookahead scheduling engine on first press, and its adjacent status LED flares bright red while the master clock is running. |
 | DUENDE (IMPROV) | A secondary tactile rocker switch that enables generative algorithmic syncopation, injecting fills, redobles, and drops into the active pattern without losing the underlying *compás*. |
 
-### 2.2 Palo Select
+### 2.2 Pattern Select
 
 | Control | Function |
 |---|---|
-| PALO SELECT | A bank of LED-indicated tactile buttons to instantly switch the active pattern memory. Choosing a *palo* dynamically reconstructs the radial UI and underlying sequence. Supported *palos* include Bulerías, Soleá, Alegrías, Seguiriyas, Tangos (8-step binary), and Fandangos. |
+| PATTERN SELECT | A bank of nine LED-indicated tactile buttons to instantly switch the active pattern memory. Choosing a pattern dynamically reconstructs the radial UI and underlying sequence. Supported modes include pure mathematical generation (Poly 3:2), standard ternary *palos* (Bulería 12, Soleá, Alegrías, Seguiriyas, Fandangos), tight 6-step *medio compás* (Bulería 6), and 8-step binary grooves (Tangos, Rumbas). |
 
 ### 2.3 Tempo
 
@@ -67,9 +67,9 @@ The sequencer matrix is arranged as three concentric rings of tactile, physical-
 
 ### 4.1 Step interactions & responsiveness
 
-- **Dynamic Geometry** — The grid mathematically scales and reconstructs itself based on the selected *palo*, forming a 12-step circle for ternary rhythms or an 8-step octagon for binary rhythms (Tangos).
+- **Dynamic Geometry** — The grid mathematically scales and reconstructs itself based on the selected pattern, forming a 12-step circle for standard ternary rhythms, an 8-step circle for binary rhythms (Tangos, Rumbas), or a 6-step circle for *medio compás* (Bulería 6).
 - **Cycle & toggle** — Clicking or tapping a step's pad cycles it through three velocity states in sequence: Rest → Normal → Accent → Rest.
-- **Visual feedback** — The embedded LED on each pad reflects its current state at rest (dark, muted glow, or bright flare with illuminated border), and briefly flashes white as the playhead strikes it during playback.
+- **Visual feedback** — The embedded LED on each pad reflects its current state at rest (dark, muted glow, or bright flare with illuminated border), and briefly flashes white as the playhead strikes it during playback. The central silkscreen text updates dynamically to reflect the current cycle length.
 
 ### 4.2 Velocity states
 
@@ -92,7 +92,7 @@ When active, the Duende engine injects authentic flamenco syncopation into the *
 
 ## 6. Technical specifications
 
-- **Sequencer architecture**: Dynamic radial cycle adapting to 8 or 12 steps; mathematically reconstructs geometry (x/y coordinates mapped via percentages for flawless responsive scaling) based on the selected *palo*. Includes memory banks for Bulerías, Soleá, Alegrías, Seguiriyas, Tangos, and Fandangos.
+- **Sequencer architecture**: Dynamic radial cycle adapting to 6, 8, or 12 steps; mathematically reconstructs geometry (x/y coordinates mapped via percentages for flawless responsive scaling) based on the selected pattern. Includes memory banks for Poly 3:2, Bulería 12, Bulería 6, Soleá, Alegrías, Seguiriyas, Tangos, Fandangos, and Rumbas.
 - **Audio engine**: Pure Web Audio API synthesis, driven by a standard lookahead scheduler (25 ms tick, 100 ms schedule-ahead window) referenced against `audioCtx.currentTime` for sample-accurate timing independent of UI thread jitter.
 - **Drum synthesis models**:
   - **Foot**: Triangle wave oscillator with a rapid exponential pitch drop into an exponential gain decay; start frequency and peak gain scaled by velocity (including the 0.5 Ghost state).
@@ -109,3 +109,4 @@ Published by Voltage & Wave
 Website: [voltageandwave.co.uk](https://voltageandwave.co.uk/)
 
 Copyright © 2026 José Velázquez MA / Voltage & Wave. All rights reserved.
+
