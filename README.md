@@ -1,6 +1,7 @@
 # CP-12 Compás Processor
 
-<img width="870" height="816" alt="cp12-screenshot" src="https://github.com/user-attachments/assets/83113677-13bc-439d-9257-8d2ab3624539" />
+<img width="50%" height="50%" alt="cp12-screenshot (1)" src="https://github.com/user-attachments/assets/aafa0de4-783a-4805-8aa8-e7fd71dd42e2" />
+
 
 ## Table of contents
 
@@ -8,13 +9,13 @@
 2. [Master controls & architecture](#2-master-controls--architecture)
 3. [Radial channels & sound shaping](#3-radial-channels--sound-shaping)
 4. [The 12-step grid & velocity states](#4-the-12-step-grid--velocity-states)
-5. [Technical specifications](#5-technical-specifications)
-6. [Credits & copyright](#6-credits--copyright)
+5. [The Duende (Improv) engine](#5-the-duende-improv-engine)
+6. [Technical specifications](#6-technical-specifications)
+7. [Credits & copyright](#7-credits--copyright)
 
 ## 1. Introduction
 
-The CP-12 is not a standard linear step sequencer; it is a radial polyrhythm engine dedicated to the *compás*—the 12-beat metric cycle foundational to flamenco. Specifically, it maps the driving tension of the bulería. Where traditional drum machines lock into rigid 4/4 grids, the CP-12 generates groove through a 3-against-2 polyrhythm. It pits a heavy 3-beat foot pattern against intersecting 2-beat and 3-beat hand claps (*palmas*). The radial interface visualizes this 12-step cycle as a continuous loop, geometrically mapping exactly where the duple and triple meters collide.
-
+The CP-12 is not a standard linear step sequencer; it is a radial polyrhythm engine dedicated to the *compás*—the 12-beat metric cycle foundational to flamenco. Specifically, it maps the driving tension of the bulería. Where traditional drum machines lock into rigid 4/4 grids, the CP-12 generates groove through a 3-against-2 polyrhythm. It pits a heavy 3-beat foot pattern against intersecting 2-beat and 3-beat hand claps (*palmas*). The radial interface visualises this 12-step cycle as a continuous loop, geometrically mapping exactly where the duple and triple meters collide.
 
 ## 2. Master controls & architecture
 
@@ -25,6 +26,7 @@ The header panel governs global transport and tempo.
 | Control | Function |
 |---|---|
 | CLOCK / PLAY | A tactile rocker switch that toggles the global sequencer on and off. Engages the sub-millisecond lookahead scheduling engine on first press, and its adjacent status LED flares bright red while the master clock is running. |
+| DUENDE (IMPROV) | A secondary tactile rocker switch that enables generative algorithmic syncopation, injecting fills, redobles, and drops into the active pattern without losing the underlying *compás*. |
 
 ### 2.2 Tempo
 
@@ -65,26 +67,36 @@ The sequencer matrix is arranged as three concentric rings of tactile, physical-
 
 ### 4.2 Velocity states
 
-The CP-12 uses a three-state velocity system in place of full parameter locking:
+The CP-12 uses a discrete velocity system in place of full parameter locking, which dynamically expands when the Duende engine is active:
 
 | State | Appearance | Behaviour |
 |---|---|---|
 | 0 — Rest | Dark, flush with the chassis | Step is silent. |
+| 0.5 — Ghost | Node flashes cyan | Triggered algorithmically by the Duende engine. Lower frequency and VCA peak (0.15–0.2 gain) for a subtle background strike. |
 | 1 — Normal | Muted LED glow | Triggers a standard, controlled strike. |
 | 2 — Accent | Bright LED flare, illuminated border | Triggers a hard strike — higher VCA peak and a wider filter cutoff for a sharper, brighter transient. |
 
-## 5. Technical specifications
+## 5. The Duende (Improv) engine
+
+When active, the Duende engine injects authentic flamenco syncopation into the *compás*. These generative events are visualised dynamically on the sequencer's central dashed guide rings.
+
+* **Ghost Fills:** Has a 15% chance to fill completely empty steps with a subtle foot tap or muted clap. The central guide rings pulse with a watery cyan glow.
+* **Syncopated Drops:** Has a 10% chance to drop an active beat entirely to create structural voids. The central guide rings completely dim out.
+* **Redobles (Double Strikes):** Has a 15% chance to trigger a rapid double-tap (flam). The central guide rings flash a bright, resonant gold, and the step node itself flashes gold.
+
+## 6. Technical specifications
 
 - **Sequencer architecture**: 3 independent voices sharing a single 12-step radial cycle; a fixed 3-beat (Foot, Right Hand) and 2-beat (Left Hand) subdivision generates the underlying 3:2 polyrhythm.
 - **Audio engine**: Pure Web Audio API synthesis, driven by a standard lookahead scheduler (25 ms tick, 100 ms schedule-ahead window) referenced against `audioCtx.currentTime` for sample-accurate timing independent of UI thread jitter.
 - **Drum synthesis models**:
-  - **Foot**: Triangle wave oscillator with a rapid exponential pitch drop into an exponential gain decay; start frequency and peak gain scaled by velocity.
+  - **Foot**: Triangle wave oscillator with a rapid exponential pitch drop into an exponential gain decay; start frequency and peak gain scaled by velocity (including the 0.5 Ghost state).
   - **Right Hand (Seca)**: Band-pass filtered white noise burst, tuned brighter and wider on accent, with slight randomised detuning ("humanise") to avoid mechanically identical hits.
   - **Left Hand (Sorda)**: Low-pass filtered white noise burst, tuned darker and rounder than the right-hand voice.
-- **Velocity modulation**: Three-state (Rest / Normal / Accent) array-based pattern data per voice, 12 steps × 3 tracks.
-- **Interface**: Hardware-styled 340px radial UI within a rack-mounted chassis, using Pointer Event handling for the tempo knob and click/tap handling for step nodes.
+- **Algorithmic modulation (Duende)**: Introduces a non-destructive 0.5 velocity state for ghost notes and calculates a fixed 35ms humanised flam offset for redoble grace notes to prevent audio clipping and mechanical stuttering.
+- **Velocity modulation**: Three-state (Rest / Normal / Accent) array-based pattern data per voice, 12 steps × 3 tracks, augmented dynamically during playback.
+- **Interface**: Hardware-styled 340px radial UI within a rack-mounted chassis, using Pointer Event handling for the tempo knob and click/tap handling for step nodes. Includes CSS-driven dashed ring visualisers for algorithmic states.
 
-## 6. Credits & copyright
+## 7. Credits & copyright
 
 CP-12 Compás Processor
 Created & Developed by José Velázquez MA
@@ -92,5 +104,3 @@ Published by Voltage & Wave
 Website: [voltageandwave.co.uk](https://voltageandwave.co.uk/)
 
 Copyright © 2026 José Velázquez MA / Voltage & Wave. All rights reserved.
-
-
