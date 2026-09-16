@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<!-- 
+    CP-12 Compás Processor (Radial Polyrhythm Generator)
+    Created & Developed by Jose Velazquez MA
+    Voltage & Wave (https://voltageandwave.co.uk/)
+    Copyright (c) 2026 Jose Velazquez MA / Voltage & Wave. All rights reserved.
+    -- DAW pass: added local WAV recording (master bus only). --
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CP-12 Compás Processor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background-color: #0d0f12; 
+            color: #1a1e24; 
+            font-family: monospace; 
+            text-transform: uppercase; 
+            padding: 1.25rem; 
+            user-select: none; 
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .synth-enclosure {
+            position: relative;
+            display: flex;
+            align-items: stretch;
+            border-radius: 10px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.95), 0 0 40px rgba(0,0,0,0.8);
+        }
+
+        .wooden-ear {
+            width: 26px;
+            background: linear-gradient(90deg, #2b150c 0%, #522815 30%, #3a1b0d 70%, #1c0b05 100%);
+            border-top: 2px solid #733c1d;
+            border-bottom: 3px solid #0f0502;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -2px 6px rgba(0,0,0,0.9);
+            flex-shrink: 0;
+        }
+        .wooden-ear-left { border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-right: 2px solid #111; }
+        .wooden-ear-right { border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-left: 2px solid #111; }
+
+        .chassis { 
+            background: radial-gradient(circle at 50% 20%, #f0ebd8 0%, #e2dbc8 60%, #cebba8 100%); 
+            border-top: 3px solid #f7f4e9; 
+            border-bottom: 4px solid #82796e; 
+            padding: 24px 28px; 
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.8), inset 0 -2px 5px rgba(0,0,0,0.3);
+        }
+        @media (min-width: 768px) { .chassis { padding: 32px 36px; } }
+
+        .rack-bolt {
+            width: 12px; height: 12px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #a39c8e 0%, #3a362f 80%);
+            border: 1px solid #1a1815;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.3);
+            position: absolute;
+        }
+        .bolt-tl { top: 12px; left: 12px; }
+        .bolt-tr { top: 12px; right: 12px; }
+        .bolt-bl { bottom: 12px; left: 12px; }
+        .bolt-br { bottom: 12px; right: 12px; }
+
+        .logo-panel {
+            background: linear-gradient(180deg, #2a2722 0%, #171614 100%);
+            border: 1.5px solid #000;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 2px 4px rgba(0,0,0,0.4);
+        }
+        .logo-panel-accent {
+            background: linear-gradient(180deg, #8a2217 0%, #4a0d07 100%);
+            border: 1.5px solid #000;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 0 10px rgba(200, 58, 42, 0.4);
+        }
+        .logo-panel-accent .logo-char { color: #ff9d93; }
+        .logo-panel .logo-char { color: #f0ebd8; }
+
+        .panel-outline {
+            border: 1.5px solid #38342e;
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.025);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05), 0 1px 0 rgba(255,255,255,0.7);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .rocker-button {
+            background: linear-gradient(180deg, #991b1b 0%, #5c0f0f 100%);
+            border: 2px solid #280505;
+            box-shadow: 0 3px 0 #1a0303, 0 4px 6px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.3);
+            transition: all 0.08s ease;
+        }
+        .rocker-button:active { transform: translateY(2px); box-shadow: 0 1px 0 #1a0303; }
+        .rocker-button.is-active {
+            background: linear-gradient(180deg, #ef4444 0%, #991b1b 100%);
+            border-color: #fca5a5;
+            box-shadow: 0 3px 0 #1a0303, 0 0 16px rgba(239, 68, 68, 0.7);
+        }
+        .rocker-button.is-disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+
+        .knob-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; width: 56px; }
+        .tick-container { position: relative; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; }
+        .tick-ring {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%;
+            -webkit-mask: radial-gradient(circle, transparent 22px, #000 23px, #000 28px, transparent 28px);
+            mask: radial-gradient(circle, transparent 22px, #000 23px, #000 28px, transparent 28px);
+            background: conic-gradient(from -135deg,
+                #221e1a 0deg 1.5deg, transparent 1.5deg 27deg, #221e1a 27deg 28.5deg, transparent 28.5deg 54deg,
+                #221e1a 54deg 55.5deg, transparent 55.5deg 81deg, #221e1a 81deg 82.5deg, transparent 82.5deg 108deg,
+                #221e1a 108deg 109.5deg, transparent 109.5deg 135deg, #221e1a 135deg 136.5deg, transparent 136.5deg 162deg,
+                #221e1a 162deg 163.5deg, transparent 163.5deg 189deg, #221e1a 189deg 190.5deg, transparent 190.5deg 216deg,
+                #221e1a 216deg 217.5deg, transparent 217.5deg 243deg, #221e1a 243deg 244.5deg, transparent 244.5deg 270deg,
+                #221e1a 270deg 271.5deg, transparent 271.5deg 360deg
+            );
+        }
+        .knob { 
+            width: 42px; height: 40px; border-radius: 50%; 
+            background: radial-gradient(circle at 35% 35%, #2d3036 0%, #15171a 70%, #050608 100%); 
+            border: 2px solid #000; cursor: ns-resize; position: relative; z-index: 2;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.3), 0 4px 7px rgba(0,0,0,0.35);
+            transform: rotate(-135deg); touch-action: none;
+        }
+        .knob::after { content: ''; position: absolute; top: 3px; left: 18px; width: 2px; height: 13px; background: #fff; border-radius: 1px; box-shadow: 0 0 2px rgba(255,255,255,0.9); }
+
+        #radial-ui {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            aspect-ratio: 1 / 1;
+            margin: 10px auto;
+            border-radius: 50%;
+        }
+
+        .guide-ring {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 1.5px dashed rgba(56, 52, 46, 0.25);
+            pointer-events: none;
+            transition: all 0.15s ease-out;
+        }
+
+        .ring-ghost { border-color: rgba(6, 182, 212, 0.6) !important; box-shadow: 0 0 12px rgba(6, 182, 212, 0.3), inset 0 0 12px rgba(6, 182, 212, 0.3); }
+        .ring-redoble { border-color: rgba(234, 179, 8, 0.7) !important; box-shadow: 0 0 16px rgba(234, 179, 8, 0.4), inset 0 0 16px rgba(234, 179, 8, 0.4); }
+        .ring-drop { border-color: transparent !important; opacity: 0.1; }
+
+        .radial-node {
+            position: absolute;
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            background: linear-gradient(180deg, #33363d 0%, #191a1e 100%);
+            border: 2px solid #000;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.05s, border-color 0.2s, box-shadow 0.2s;
+        }
+        .radial-node:active { transform: translate(-50%, -48%); box-shadow: 0 1px 2px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.15); }
+        .radial-node.accent { border-color: #f7f4e9; box-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 12px rgba(255,255,255,0.4); }
+
+        .node-led { 
+            width: 10px; height: 10px; border-radius: 50%; 
+            background: radial-gradient(circle at 35% 35%, #2a2a2a 0%, #050505 70%); 
+            border: 1px solid #000; 
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.2); 
+            transition: all 0.05s;
+        }
+
+        .track-foot.active .node-led { background: #7a2222; box-shadow: inset 0 1px 2px rgba(0,0,0,0.8); }
+        .track-rh.active .node-led { background: #826315; box-shadow: inset 0 1px 2px rgba(0,0,0,0.8); }
+        .track-lh.active .node-led { background: #803415; box-shadow: inset 0 1px 2px rgba(0,0,0,0.8); }
+
+        .track-foot.accent .node-led { background: radial-gradient(circle at 35% 35%, #ff7777 0%, #c83a2a 60%, #600000 100%); box-shadow: 0 0 10px #c83a2a, inset 0 1px 2px rgba(255,255,255,0.8); }
+        .track-rh.accent .node-led { background: radial-gradient(circle at 35% 35%, #ffea78 0%, #dca824 60%, #523b00 100%); box-shadow: 0 0 10px #dca824, inset 0 1px 2px rgba(255,255,255,0.8); }
+        .track-lh.accent .node-led { background: radial-gradient(circle at 35% 35%, #ff9e78 0%, #dc5a24 60%, #521800 100%); box-shadow: 0 0 10px #dc5a24, inset 0 1px 2px rgba(255,255,255,0.8); }
+
+        .track-foot.playing .node-led { background: #fff; box-shadow: 0 0 20px #ff7777, 0 0 10px #fff; }
+        .track-rh.playing .node-led { background: #fff; box-shadow: 0 0 20px #ffea78, 0 0 10px #fff; }
+        .track-lh.playing .node-led { background: #fff; box-shadow: 0 0 20px #ff9e78, 0 0 10px #fff; }
+
+        .radial-node.playing-ghost .node-led { background: #a5f3fc; box-shadow: 0 0 12px #06b6d4, inset 0 1px 2px #fff; }
+        .radial-node.playing-redoble .node-led { background: #fff; box-shadow: 0 0 22px #eab308, 0 0 10px #fff; }
+
+    </style>
+</head>
+<body class="min-h-screen flex justify-center items-center">
+    
+    <div class="synth-enclosure w-full max-w-4xl">
+        <div class="wooden-ear wooden-ear-left"></div>
+
+        <div class="chassis w-full">
+            <div class="rack-bolt bolt-tl"></div>
+            <div class="rack-bolt bolt-tr"></div>
+            <div class="rack-bolt bolt-bl"></div>
+            <div class="rack-bolt bolt-br"></div>
+            
+            <!-- HEADER -->
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between w-full mb-6 pb-4 border-b-2 border-[#38342e]/30 gap-6 md:gap-0">
+                <div class="flex flex-col gap-1.5 items-start">
+                    <div class="flex items-center gap-1.5 select-none">
+                        <div class="logo-panel-accent w-10 h-11 rounded flex flex-col items-center justify-center relative">
+                            <span class="logo-char font-mono font-black text-xl tracking-tighter leading-none">C</span>
+                        </div>
+                        <div class="logo-panel w-10 h-11 rounded flex flex-col items-center justify-center relative ml-1">
+                            <span class="logo-char font-mono font-black text-xl tracking-tighter leading-none">P</span>
+                        </div>
+                        <div class="logo-panel w-10 h-11 rounded flex flex-col items-center justify-center relative">
+                            <span class="logo-char font-mono font-black text-xl tracking-tighter leading-none">12</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between w-full text-[8px] font-mono font-bold tracking-widest text-[#38342e] border-t border-[#38342e]/30 pt-1">
+                        <span>COMPÁS PROCESSOR</span>
+                        <span class="text-[#c83a2a]">•</span>
+                        <span>V&amp;W</span>
+                    </div>
+                </div>
+
+                <!-- Transport, Palo Selector & Tempo -->
+                <div class="flex items-center justify-center md:justify-end w-full md:w-auto gap-4 md:gap-8 flex-wrap">
+                    
+                    <div class="flex gap-2 md:gap-4">
+                        <div class="flex flex-col items-center gap-2">
+                            <span class="text-[9px] font-bold text-[#1f1a14]">CLOCK / PLAY</span>
+                            <button id="startStop" class="rocker-button text-white px-6 py-2 font-black rounded-sm flex items-center justify-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-400 opacity-60" id="rockerLed"></span>
+                                <svg width="16" height="12" viewBox="0 0 20 14" fill="currentColor">
+                                    <polygon points="1,1 9,7 1,13" />
+                                    <rect x="12" y="2" width="7" height="10" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="flex flex-col items-center gap-2">
+                            <span class="text-[9px] font-bold text-[#1f1a14]">DUENDE (IMPROV)</span>
+                            <button id="improvToggle" class="rocker-button text-white px-6 py-2 font-black rounded-sm flex items-center justify-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-400 opacity-60" id="improvLed"></span>
+                                <svg width="16" height="12" viewBox="0 0 20 14" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2,6 Q6,0 10,6 T18,6" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Extended Hardware Palo Selector (9 Buttons) -->
+                    <div class="flex flex-col gap-2 pl-2 md:pl-4 md:border-l-2 border-[#38342e]/30">
+                        <span class="text-[9px] font-bold text-[#1f1a14] mb-1">PATTERN SELECT</span>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1.5">
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="poly32">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-poly32"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">POLY 3:2</span>
+                            </div>
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="bulerias12">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-red-500 shadow-[0_0_6px_#ef4444,inset_0_1px_1px_rgba(255,255,255,0.4)] palo-led" id="led-bulerias12"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">BULERÍA 12</span>
+                            </div>
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="bulerias6">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-bulerias6"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">BULERÍA 6</span>
+                            </div>
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="solea">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-solea"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">SOLEÁ</span>
+                            </div>
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="alegrias">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-alegrias"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">ALEGRÍAS</span>
+                            </div>
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="seguiriyas">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-seguiriyas"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">SEGUIRIYAS</span>
+                            </div>
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="tangos">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-tangos"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">TANGOS</span>
+                            </div>
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="fandangos">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-fandangos"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">FANDANGOS</span>
+                            </div>
+                            <div class="flex items-center gap-2 cursor-pointer palo-btn" data-palo="rumbas">
+                                <div class="w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led" id="led-rumbas"></div>
+                                <span class="text-[8px] font-bold text-[#1f1a14]">RUMBAS</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tempo Knob -->
+                    <div class="knob-wrapper mt-2 pl-2 md:pl-4 md:border-l-2 border-[#38342e]/30">
+                        <div class="tick-container">
+                            <div class="tick-ring"></div>
+                            <div class="knob global-knob" id="tempoKnob" data-val="50"></div>
+                        </div>
+                        <span class="text-[9px] font-bold text-[#1f1a14] mt-1" id="bpmDisplay">120 BPM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RADIAL SEQUENCER -->
+            <div class="panel-outline flex justify-center py-6 px-4 md:px-8 w-full relative">
+                <div id="radial-ui">
+                    <!-- Guide Rings -->
+                    <div class="guide-ring" style="width: 90%; height: 90%;"></div>
+                    <div class="guide-ring" style="width: 64%; height: 64%;"></div>
+                    <div class="guide-ring" style="width: 38%; height: 38%;"></div>
+                </div>
+            </div>
+            
+            <!-- Silkscreen Details & Footer -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 w-full pt-6 mt-4 border-t-2 border-[#38342e]/30">
+                <div id="silkscreen-text" class="flex flex-col sm:flex-row gap-4 sm:gap-8 text-[8px] font-bold tracking-widest text-[#82796e] uppercase">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="text-[9px] text-[#38342e] font-mono font-bold tracking-widest text-left md:text-right shrink-0">
+                    &copy; JOSE VELAZQUEZ MA / <a href="https://voltageandwave.co.uk/" target="_blank" rel="noopener noreferrer" class="hover:text-[#c83a2a] underline transition-colors">VOLTAGE &amp; WAVE</a>
+                </div>
+            </div>
+
+            <!-- Recorder Bar (bottom-left, out of the way of the main controls) -->
+            <div class="flex items-center gap-3 w-full pt-4 mt-1 border-t border-[#38342e]/20">
+                <span class="text-[9px] font-bold text-[#1f1a14] tracking-widest">RECORDER</span>
+                <button id="recordBtn" class="rocker-button text-white px-4 py-1.5 text-[9px] font-black rounded-sm flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-400 opacity-60" id="recLed"></span>
+                    REC
+                </button>
+                <span id="recordStatus" class="text-[9px] font-mono font-bold text-[#c83a2a] w-11 text-center">00:00</span>
+                <a id="downloadBtn" href="#" class="text-[9px] font-bold text-[#1f1a14] underline opacity-30 pointer-events-none">SAVE WAV</a>
+            </div>
+
+        </div>
+        <div class="wooden-ear wooden-ear-right"></div>
+    </div>
+
+<script>
+let audioCtx;
+let noiseBuffer;
+let masterGain;
+let isPlaying = false;
+let isImprovMode = false;
+let currentStep = 0;
+let currentSteps = 12; 
+let nextNoteTime = 0;
+let timerID;
+let bpm = 120;
+const lookahead = 25;
+const scheduleAheadTime = 0.1;
+let drawQueue = [];
+let lastDrawnStep = -1;
+let uiElements = { lh: [], rh: [], foot: [] };
+const container = document.getElementById('radial-ui');
+const center = 50; 
+
+// --- Recording state ---
+let recordDest = null;
+let mediaRecorder = null;
+let recordedChunks = [];
+let isRecording = false;
+let recordStartTime = 0;
+let recordTimerInterval = null;
+
+// Advanced Flamenco Palo & Math Library
+const paloMemory = {
+    poly32: { // Pure 3-against-2 mathematical representation
+        steps: 12,
+        lh: [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        rh: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+        foot: [2, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]
+    },
+    bulerias12: { // Standard 12-beat Compás mapping
+        steps: 12,
+        lh: [0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+        rh: [1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0],
+        foot: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2]
+    },
+    bulerias6: { // Medio Compás variation (6 beats)
+        steps: 6,
+        lh: [1, 0, 1, 0, 1, 0],
+        rh: [0, 1, 0, 1, 0, 1],
+        foot: [2, 0, 2, 0, 2, 0]
+    },
+    solea: {
+        steps: 12,
+        lh: [0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+        rh: [0, 0, 2, 0, 0, 2, 0, 2, 0, 2, 0, 2],
+        foot: [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2]
+    },
+    alegrias: {
+        steps: 12,
+        lh: [0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+        rh: [0, 0, 1, 0, 0, 2, 0, 1, 0, 2, 0, 2],
+        foot: [0, 0, 1, 0, 0, 1, 0, 2, 0, 2, 0, 2]
+    },
+    seguiriyas: {
+        steps: 12,
+        lh: [1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0],
+        rh: [2, 0, 2, 0, 2, 0, 0, 2, 0, 0, 2, 0],
+        foot: [2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0]
+    },
+    tangos: {
+        steps: 8,
+        lh: [0, 0, 2, 0, 0, 0, 2, 0],
+        rh: [0, 1, 1, 1, 0, 1, 1, 1],
+        foot: [0, 2, 0, 0, 0, 2, 0, 0]
+    },
+    fandangos: {
+        steps: 12,
+        lh: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
+        rh: [0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1],
+        foot: [2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0]
+    },
+    rumbas: { // 4/4 variation
+        steps: 8,
+        lh: [1, 0, 0, 1, 0, 0, 1, 0],
+        rh: [0, 1, 1, 0, 1, 1, 0, 1],
+        foot: [2, 0, 0, 0, 2, 0, 0, 0]
+    }
+};
+
+const tracks = {
+    lh:   { pattern: [], radius: 45, class: 'track-lh' },
+    rh:   { pattern: [], radius: 32, class: 'track-rh' },
+    foot: { pattern: [], radius: 19, class: 'track-foot' }
+};
+
+function renderRadialGrid(paloKey) {
+    document.querySelectorAll('.radial-node').forEach(n => n.remove());
+    uiElements = { lh: [], rh: [], foot: [] };
+    
+    tracks.lh.pattern = [...paloMemory[paloKey].lh];
+    tracks.rh.pattern = [...paloMemory[paloKey].rh];
+    tracks.foot.pattern = [...paloMemory[paloKey].foot];
+    
+    currentSteps = paloMemory[paloKey].steps;
+    currentStep = 0;
+    drawQueue = [];
+    
+    const silkscreen = document.getElementById('silkscreen-text');
+    if (currentSteps === 8) {
+        silkscreen.innerHTML = '<div>8-STEP CYCLE <br> <span class="text-[#38342e]">4/4 BINARY GENERATOR</span></div><div><span class="text-[#c83a2a]">VELOCITY STATES:</span><br><span class="text-[#38342e]">OFF / NORMAL / ACCENT</span></div>';
+    } else if (currentSteps === 6) {
+        silkscreen.innerHTML = '<div>6-STEP CYCLE <br> <span class="text-[#38342e]">MEDIO COMPÁS GENERATOR</span></div><div><span class="text-[#c83a2a]">VELOCITY STATES:</span><br><span class="text-[#38342e]">OFF / NORMAL / ACCENT</span></div>';
+    } else {
+        const titleType = paloKey === 'poly32' ? '3:2 RATIO GENERATOR' : 'COMPÁS GENERATOR';
+        silkscreen.innerHTML = `<div>12-STEP CYCLE <br> <span class="text-[#38342e]">${titleType}</span></div><div><span class="text-[#c83a2a]">VELOCITY STATES:</span><br><span class="text-[#38342e]">OFF / NORMAL / ACCENT</span></div>`;
+    }
+
+    Object.keys(tracks).forEach(trackKey => {
+        const track = tracks[trackKey];
+        for (let i = 0; i < currentSteps; i++) {
+            const angle = (i / currentSteps) * Math.PI * 2 - (Math.PI / 2);
+            const x = center + Math.cos(angle) * track.radius;
+            const y = center + Math.sin(angle) * track.radius;
+
+            const node = document.createElement('div');
+            
+            let stateClass = '';
+            if (track.pattern[i] === 1) stateClass = 'active';
+            if (track.pattern[i] === 2) stateClass = 'accent';
+
+            node.className = `radial-node ${track.class} ${stateClass}`;
+            node.style.left = `${x}%`;
+            node.style.top = `${y}%`;
+
+            const led = document.createElement('div');
+            led.className = 'node-led';
+            node.appendChild(led);
+
+            node.addEventListener('click', () => {
+                track.pattern[i] = (track.pattern[i] + 1) % 3;
+                node.classList.remove('active', 'accent');
+                if (track.pattern[i] === 1) node.classList.add('active');
+                if (track.pattern[i] === 2) node.classList.add('accent');
+            });
+
+            container.appendChild(node);
+            uiElements[trackKey].push(node);
+        }
+    });
+}
+
+// Load default
+renderRadialGrid('bulerias12');
+
+document.querySelectorAll('.palo-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const selectedPalo = e.currentTarget.dataset.palo;
+        
+        document.querySelectorAll('.palo-led').forEach(led => {
+            led.className = 'w-2.5 h-2.5 rounded-full border border-black bg-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] palo-led';
+        });
+        document.getElementById(`led-${selectedPalo}`).className = 'w-2.5 h-2.5 rounded-full border border-black bg-red-500 shadow-[0_0_6px_#ef4444,inset_0_1px_1px_rgba(255,255,255,0.4)] palo-led';
+
+        renderRadialGrid(selectedPalo);
+    });
+});
+
+// Creates the AudioContext + master bus once, shared by playback and the recorder,
+// so either one can be the thing that wakes the audio graph up first.
+function ensureAudio() {
+    if (audioCtx) return;
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AudioContext();
+    const noiseBufferSize = audioCtx.sampleRate * 2; 
+    noiseBuffer = audioCtx.createBuffer(1, noiseBufferSize, audioCtx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < noiseBufferSize; i++) output[i] = Math.random() * 2 - 1;
+
+    masterGain = audioCtx.createGain();
+    masterGain.connect(audioCtx.destination);
+
+    // Tap the master bus for recording, without altering what's heard on the speakers.
+    recordDest = audioCtx.createMediaStreamDestination();
+    masterGain.connect(recordDest);
+}
+
+function playFoot(time, velocity) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(masterGain);
+    osc.type = 'triangle';
+    
+    const startFreq = velocity === 2 ? 180 : (velocity === 0.5 ? 90 : 120);
+    const peakGain = velocity === 2 ? 1.0 : (velocity === 0.5 ? 0.15 : 0.4);
+    
+    osc.frequency.setValueAtTime(startFreq, time);
+    osc.frequency.exponentialRampToValueAtTime(30, time + 0.04);
+    
+    gain.gain.setValueAtTime(peakGain, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
+    
+    osc.start(time);
+    osc.stop(time + 0.1);
+}
+
+function playClap(time, type, velocity) {
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = noiseBuffer;
+    const filter = audioCtx.createBiquadFilter();
+    const gain = audioCtx.createGain();
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(masterGain);
+    
+    const humanize = (Math.random() * 100) - 50;
+    const gainMult = velocity === 2 ? 1.0 : (velocity === 0.5 ? 0.2 : 0.45);
+    
+    if (type === 'seca') { 
+        filter.type = 'bandpass';
+        filter.frequency.value = (velocity === 2 ? 2600 : 2100) + humanize;
+        filter.Q.value = 1.5;
+        gain.gain.setValueAtTime(0.8 * gainMult, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.05);
+    } else { 
+        filter.type = 'lowpass';
+        filter.frequency.value = (velocity === 2 ? 1000 : 700) + humanize;
+        gain.gain.setValueAtTime(1.0 * gainMult, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
+    }
+    noise.start(time);
+    noise.stop(time + 0.1);
+}
+
+function nextNote() {
+    const secondsPerBeat = 60.0 / bpm;
+    nextNoteTime += secondsPerBeat / 4; 
+    currentStep = (currentStep + 1) % currentSteps;
+}
+
+function scheduleNote(step, time) {
+    let playF = tracks.foot.pattern[step];
+    let playR = tracks.rh.pattern[step];
+    let playL = tracks.lh.pattern[step];
+    
+    let duendeEvent = null;
+    let isRedoble = false;
+
+    if (isImprovMode) {
+        const rand = Math.random();
+        
+        if (playF === 0 && playR === 0 && playL === 0) {
+            if (rand < 0.15) {
+                const fillChoice = Math.random();
+                if (fillChoice < 0.4) playF = 0.5;
+                else if (fillChoice < 0.7) playR = 0.5;
+                else playL = 0.5;
+                duendeEvent = 'GHOST';
+            }
+        } else {
+            if (rand < 0.10) {
+                playF = 0; playR = 0; playL = 0;
+                duendeEvent = 'DROP';
+            } 
+            else if (rand > 0.85) {
+                isRedoble = true;
+                duendeEvent = 'REDOBLE';
+            }
+        }
+    }
+
+    if (playF > 0) playFoot(time, playF);
+    if (playR > 0) playClap(time, 'seca', playR);
+    if (playL > 0) playClap(time, 'sorda', playL);
+    
+    if (isRedoble) {
+        const flamOffset = 0.035; 
+        if (playF > 0) playFoot(time + flamOffset, 0.5); 
+        if (playR > 0) playClap(time + flamOffset, 'seca', 0.5);
+        if (playL > 0) playClap(time + flamOffset, 'sorda', 0.5);
+    }
+
+    drawQueue.push({ step: step, time: time, modF: playF, modR: playR, modL: playL, duende: duendeEvent });
+}
+
+function scheduler() {
+    while (nextNoteTime < audioCtx.currentTime + scheduleAheadTime) {
+        scheduleNote(currentStep, nextNoteTime);
+        nextNote();
+    }
+    timerID = setTimeout(scheduler, lookahead);
+}
+
+function draw() {
+    let currentTime = audioCtx.currentTime;
+    while (drawQueue.length && drawQueue[0].time < currentTime) {
+        const q = drawQueue[0];
+        
+        if (lastDrawnStep !== -1 && lastDrawnStep < currentSteps) {
+            Object.keys(uiElements).forEach(key => {
+                uiElements[key][lastDrawnStep].classList.remove('playing', 'playing-ghost', 'playing-redoble');
+            });
+        }
+        
+        if (q.modL > 0) uiElements.lh[q.step].classList.add(q.modL === 0.5 ? 'playing-ghost' : (q.duende === 'REDOBLE' ? 'playing-redoble' : 'playing'));
+        if (q.modR > 0) uiElements.rh[q.step].classList.add(q.modR === 0.5 ? 'playing-ghost' : (q.duende === 'REDOBLE' ? 'playing-redoble' : 'playing'));
+        if (q.modF > 0) uiElements.foot[q.step].classList.add(q.modF === 0.5 ? 'playing-ghost' : (q.duende === 'REDOBLE' ? 'playing-redoble' : 'playing'));
+        
+        if (q.duende) {
+            const rings = document.querySelectorAll('.guide-ring');
+            let ringClass = '';
+            
+            if (q.duende === 'GHOST') ringClass = 'ring-ghost';
+            else if (q.duende === 'REDOBLE') ringClass = 'ring-redoble';
+            else if (q.duende === 'DROP') ringClass = 'ring-drop';
+            
+            rings.forEach(r => r.classList.add(ringClass));
+            
+            setTimeout(() => { 
+                rings.forEach(r => r.classList.remove('ring-ghost', 'ring-redoble', 'ring-drop'));
+            }, 150);
+        }
+
+        lastDrawnStep = q.step;
+        drawQueue.splice(0, 1);
+    }
+    if (isPlaying) requestAnimationFrame(draw);
+}
+
+document.getElementById('improvToggle').addEventListener('click', (e) => {
+    isImprovMode = !isImprovMode;
+    const btn = e.currentTarget;
+    const led = document.getElementById('improvLed');
+
+    if (isImprovMode) {
+        btn.classList.add('is-active');
+        led.classList.replace('bg-red-400', 'bg-red-200');
+        led.classList.replace('opacity-60', 'opacity-100');
+    } else {
+        btn.classList.remove('is-active');
+        led.classList.replace('bg-red-200', 'bg-red-400');
+        led.classList.replace('opacity-100', 'opacity-60');
+    }
+});
+
+document.getElementById('startStop').addEventListener('click', (e) => {
+    ensureAudio();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    isPlaying = !isPlaying;
+    const btn = e.currentTarget;
+    const led = document.getElementById('rockerLed');
+
+    if (isPlaying) {
+        btn.classList.add('is-active');
+        led.classList.replace('bg-red-400', 'bg-red-200');
+        led.classList.replace('opacity-60', 'opacity-100');
+        
+        nextNoteTime = audioCtx.currentTime + 0.05;
+        currentStep = 0;
+        scheduler();
+        requestAnimationFrame(draw);
+    } else {
+        btn.classList.remove('is-active');
+        led.classList.replace('bg-red-200', 'bg-red-400');
+        led.classList.replace('opacity-100', 'opacity-60');
+        
+        clearTimeout(timerID);
+        Object.keys(uiElements).forEach(key => {
+            if (lastDrawnStep !== -1 && lastDrawnStep < currentSteps) {
+                uiElements[key][lastDrawnStep].classList.remove('playing', 'playing-ghost', 'playing-redoble');
+            }
+        });
+        drawQueue = [];
+    }
+});
+
+const tempoKnob = document.getElementById('tempoKnob');
+let isDragging = false, startY = 0, startVal = 50;
+
+tempoKnob.addEventListener('pointerdown', (e) => {
+    isDragging = true;
+    tempoKnob.setPointerCapture(e.pointerId);
+    startY = e.clientY;
+    startVal = parseFloat(tempoKnob.dataset.val);
+});
+
+document.addEventListener('pointermove', (e) => {
+    if (!isDragging) return;
+    let newVal = Math.max(0, Math.min(100, startVal + (startY - e.clientY)));
+    tempoKnob.dataset.val = newVal;
+    
+    bpm = Math.round(60 + (newVal / 100) * 140);
+    document.getElementById('bpmDisplay').innerText = `${bpm} BPM`;
+    tempoKnob.style.transform = `rotate(${-135 + (newVal / 100) * 270}deg)`;
+});
+
+const endDrag = (e) => {
+    if (isDragging) {
+        try { tempoKnob.releasePointerCapture(e.pointerId); } catch(err){}
+        isDragging = false;
+    }
+};
+document.addEventListener('pointerup', endDrag);
+document.addEventListener('pointercancel', endDrag);
+
+// ==========================================================
+// === DAW: Local WAV Recording (MediaRecorder -> decode -> WAV)
+// === Master bus only, no separate stems.
+// ==========================================================
+const recordBtn = document.getElementById('recordBtn');
+const recordStatus = document.getElementById('recordStatus');
+const downloadBtn = document.getElementById('downloadBtn');
+const recLed = document.getElementById('recLed');
+
+if (typeof MediaRecorder === 'undefined') {
+    recordBtn.classList.add('is-disabled');
+    recordStatus.innerText = 'NO SUPPORT';
+} else {
+    recordBtn.addEventListener('click', async () => {
+        ensureAudio();
+        if (audioCtx.state === 'suspended') await audioCtx.resume();
+
+        if (!isRecording) {
+            recordedChunks = [];
+            let options;
+            if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+                options = { mimeType: 'audio/webm;codecs=opus' };
+            } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+                options = { mimeType: 'audio/webm' };
+            }
+            mediaRecorder = new MediaRecorder(recordDest.stream, options);
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = async () => {
+                recordStatus.innerText = 'ENCODING';
+                const rawBlob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+                try {
+                    // Decode the captured audio and re-encode as PCM WAV, so the
+                    // download works directly in any DAW with no transcoding step.
+                    const arrayBuffer = await rawBlob.arrayBuffer();
+                    const decoded = await audioCtx.decodeAudioData(arrayBuffer);
+                    const wavBlob = audioBufferToWav(decoded);
+                    downloadBtn.href = URL.createObjectURL(wavBlob);
+                    downloadBtn.download = recordingFilename('wav');
+                } catch (err) {
+                    // Fallback: offer the original compressed capture if WAV encoding fails
+                    downloadBtn.href = URL.createObjectURL(rawBlob);
+                    downloadBtn.download = recordingFilename('webm');
+                }
+                downloadBtn.classList.remove('opacity-30', 'pointer-events-none');
+                recordStatus.innerText = '00:00';
+            };
+
+            mediaRecorder.start();
+            isRecording = true;
+            recordStartTime = Date.now();
+            recordBtn.classList.add('is-active');
+            recLed.classList.replace('bg-red-400', 'bg-red-200');
+            recLed.classList.replace('opacity-60', 'opacity-100');
+            downloadBtn.classList.add('opacity-30', 'pointer-events-none');
+
+            recordTimerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - recordStartTime) / 1000);
+                const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+                const ss = String(elapsed % 60).padStart(2, '0');
+                recordStatus.innerText = `${mm}:${ss}`;
+            }, 500);
+        } else {
+            mediaRecorder.stop();
+            isRecording = false;
+            clearInterval(recordTimerInterval);
+            recordBtn.classList.remove('is-active');
+            recLed.classList.replace('bg-red-200', 'bg-red-400');
+            recLed.classList.replace('opacity-100', 'opacity-60');
+        }
+    });
+}
+
+function audioBufferToWav(buffer) {
+    const numChannels = buffer.numberOfChannels;
+    const sampleRate = buffer.sampleRate;
+    const samples = numChannels === 2
+        ? interleaveChannels(buffer.getChannelData(0), buffer.getChannelData(1))
+        : buffer.getChannelData(0);
+
+    const bytesPerSample = 2;
+    const blockAlign = numChannels * bytesPerSample;
+    const dataSize = samples.length * bytesPerSample;
+    const arrayBuffer = new ArrayBuffer(44 + dataSize);
+    const view = new DataView(arrayBuffer);
+
+    writeAscii(view, 0, 'RIFF');
+    view.setUint32(4, 36 + dataSize, true);
+    writeAscii(view, 8, 'WAVE');
+    writeAscii(view, 12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * blockAlign, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, 16, true);
+    writeAscii(view, 36, 'data');
+    view.setUint32(40, dataSize, true);
+
+    let offset = 44;
+    for (let i = 0; i < samples.length; i++, offset += 2) {
+        const s = Math.max(-1, Math.min(1, samples[i]));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    }
+
+    return new Blob([view], { type: 'audio/wav' });
+}
+
+function interleaveChannels(left, right) {
+    const result = new Float32Array(left.length + right.length);
+    let idx = 0;
+    for (let i = 0; i < left.length; i++) {
+        result[idx++] = left[i];
+        result[idx++] = right[i];
+    }
+    return result;
+}
+
+function writeAscii(view, offset, text) {
+    for (let i = 0; i < text.length; i++) view.setUint8(offset + i, text.charCodeAt(i));
+}
+
+function recordingFilename(ext) {
+    const d = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    const stamp = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` +
+                  `_${pad(d.getHours())}-${pad(d.getMinutes())}-${pad(d.getSeconds())}`;
+    return `cp12-recording-${stamp}.${ext}`;
+}
+</script>
+</body>
+</html>
